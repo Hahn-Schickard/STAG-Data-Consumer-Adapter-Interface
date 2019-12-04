@@ -2,7 +2,6 @@
 #define __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 
 #include "Listener.hpp"
-#include "LoggerRepository.hpp"
 
 namespace DCAI {
   typedef enum DataConsumerAdapterStatusEnum {
