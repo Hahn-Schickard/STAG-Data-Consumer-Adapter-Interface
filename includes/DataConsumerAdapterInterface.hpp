@@ -5,9 +5,10 @@
 
 namespace DCAI {
   typedef enum DataConsumerAdapterStatusEnum {
-    STARTED,
+    INITIALISING,
     RUNNING,
     STOPPED,
+    EXITED,
     UNKNOWN
   } DataConsumerAdapterStatus;
 
