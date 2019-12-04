@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.6) 
+
+set(THIS DCAI)
+
+list(APPEND PUBLIC_INCLUDES_DIRS
+            ${INCLUDES_DIR}
+)
+
+INCLUDE_DIRS_AND_FILES("${PUBLIC_INCLUDES_DIRS}" PUBLIC_INCLUDES)
+
+add_library(${THIS} INTERFACE)
+
+target_include_directories(${THIS} INTERFACE
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/>
+                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/>
+)
+
+install(
+    TARGETS ${THIS}
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(
+    DIRECTORY ${PUBLIC_INCLUDES_DIRS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
