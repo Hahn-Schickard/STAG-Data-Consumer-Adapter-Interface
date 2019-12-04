@@ -1,4 +1,4 @@
 variables:
- RUN_VALGRIND: "true"
- VALGRIND_EXECUTABLE: "build/bin/Runner"
+ RUN_VALGRIND: "false"
+ VALGRIND_EXECUTABLE: ""
  VALGRIND_EXECUTABLE_ARGS: ""
