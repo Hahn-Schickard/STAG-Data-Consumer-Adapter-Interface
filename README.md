@@ -1,6 +1,6 @@
-# Data Consumer_Adapter_Interface
+<img src="docs/code_documentation/vendor-logo.png" alt="" width="200"/>
 
-![logo](./docs/code_documentation/vendor-logo.png)
+# Data Consumer_Adapter_Interface
 
 ## Brief description
 
