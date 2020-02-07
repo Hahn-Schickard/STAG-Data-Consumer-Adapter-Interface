@@ -1,0 +1,9 @@
+[requires]
+gtest/1.8.1@bincrafters/stable 
+Information_Model/0.1@dg1024/testing
+Model_Event_Handler/0.1@dg1024/testing
+
+[generators]
+cmake
+cmake_find_package
+cmake_paths

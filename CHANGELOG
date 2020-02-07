@@ -1,0 +1,27 @@
+## [0.0.2] - Not Release
+### Changed 
+ - CMakeLists.txt 
+ - Readme to reflect conan and python 3 dependnecies
+
+### Removed 
+ - Cpack configuration 
+ - ExternalProjectAdd usage
+ - Google test dependency
+
+### Added 
+ - conan package configuration
+ - Contributing
+ - Changelog 
+ - License placeholder
+ - Authors 
+ - Sepertate _MOCK cmake target
+ - Gtests runner
+
+## [0.0.1] - 2019.12.07 
+### Added 
+ - DataCOnsumerAdapterInterface 
+
+
+## [Initial Commit] - 2019.12.07 
+### Added
+ - Set up project on Cpp Project Template v0.8.27 

@@ -1,7 +1,7 @@
-tests/googletest-src/
 build
-libs
+log
 .vscode/
+valgrind_results/
 code_coverage_report/ 
 code_coverage.info
 docs/code_documentation/html
