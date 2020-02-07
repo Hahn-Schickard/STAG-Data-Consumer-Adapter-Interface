@@ -99,20 +99,11 @@ link_file(){
     filename=$2
     lineNum="$(grep -n ${link_name} index.html | head -n 1 | cut -d: -f1)"
     lineNum=$((lineNum+1))
-    clean_name="${filename##*/}"
-    pattern="<a id=\"${link_name}\" href=\"${filename}\">${clean_name}</a>"
+    pattern="<a id=\"${link_name}\" href=\"${filename}\">${filename}</a>"
     sed "${lineNum}i${pattern}" index.html > new_index.html
     rm index.html
     mv new_index.html index.html
 }
-
-#@+ ======== Template release specific jobs ========
-link_template_files(){
-    cp -rv ../build/package/ ./
-    link_file windows-package "$(ls package/*.zip)"
-    link_file linux-package "$(ls package/*.sh)"
-}
-#@- ======== END OF TEMPLATE SPECIFC JOBS ============
 
 write_files_to_index(){
     cwd=$(pwd)
@@ -130,9 +121,6 @@ write_files_to_index(){
             echo "$f is not a release file!"
         fi
     done
-#@+ ======== Template release specific jobs ========
-    link_template_files
-#@- ======== END OF TEMPLATE SPECIFC JOBS ============
     cd "$cwd"
 }
 

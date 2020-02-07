@@ -4,9 +4,9 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Data Consumer Adapter Interface"
+PROJECT_NAME           = "Information Model Builder"
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = "A generic interface, that is required to be implemented by all of the data consumer adapters."
+PROJECT_BRIEF          = "This module provides the Information Model Building API as well as implemntations of the classes defined within the Information Model."
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = docs/code_documentation
 CREATE_SUBDIRS         = YES
