@@ -1,0 +1,31 @@
+## [0.1.0] - 2020.09.21
+### Changed 
+ - CMakeLists.txt 
+ - Readme to reflect conan and python 3 dependnecies
+ - utility scripts to work with python3
+
+### Removed 
+ - Cpack configuration 
+ - ExternalProjectAdd usage
+ - Google test dependency
+
+### Added 
+ - conan package configuration
+ - conan package integration test
+ - Contributing
+ - Changelog 
+ - License
+ - Notice
+ - Authors 
+ - Sepertate _MOCKs
+ - Gtests runner
+ - global logger instance for unit tests
+
+## [0.0.1] - 2019.12.07 
+### Added 
+ - DataConsumerAdapterInterface 
+
+
+## [Initial Commit] - 2019.12.07 
+### Added
+ - Set up project on Cpp Project Template v0.8.27 
