@@ -1,7 +1,8 @@
-## [0.0.2] - Not Release
+## [0.1.0] - 2020.09.21
 ### Changed 
  - CMakeLists.txt 
  - Readme to reflect conan and python 3 dependnecies
+ - utility scripts to work with python3
 
 ### Removed 
  - Cpack configuration 
@@ -10,16 +11,19 @@
 
 ### Added 
  - conan package configuration
+ - conan package integration test
  - Contributing
  - Changelog 
- - License placeholder
+ - License
+ - Notice
  - Authors 
- - Sepertate _MOCK cmake target
+ - Sepertate _MOCKs
  - Gtests runner
+ - global logger instance for unit tests
 
 ## [0.0.1] - 2019.12.07 
 ### Added 
- - DataCOnsumerAdapterInterface 
+ - DataConsumerAdapterInterface 
 
 
 ## [Initial Commit] - 2019.12.07 

@@ -1,9 +1,11 @@
 [requires]
-gtest/1.8.1@bincrafters/stable 
-Information_Model/0.1@dg1024/testing
-Model_Event_Handler/0.1@dg1024/testing
+gtest/1.10.0
+HaSLL/0.2.2@hahn-schickard/stable
+Model_Event_Handler/0.1.0@hahn-schickard/stable
 
 [generators]
-cmake
-cmake_find_package
 cmake_paths
+cmake_find_package
+
+[imports]
+., Find*.cmake -> ./
