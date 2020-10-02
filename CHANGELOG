@@ -1,4 +1,4 @@
-## [0.1.1] - 2020.09.28
+## [0.1.2] - 2020.10.02
 ### Changed 
  - Model Event Handler to v0.1.1
  - DataConsumerAdapterInterface start and stop methods declaration 
@@ -8,6 +8,10 @@
 
 ### Removed
  - Stoppable class
+
+## [0.1.1] - 2020.09.28
+### Changed 
+ - Model Event Handler to v0.1.1
 
 ## [0.1.0] - 2020.09.21
 ### Changed 
