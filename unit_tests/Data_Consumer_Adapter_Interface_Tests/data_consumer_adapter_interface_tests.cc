@@ -27,7 +27,14 @@ TEST(DCAI_Test, canHandleEvent) {
 
 TEST(DCAI_Test, canStart) {
   DataConsumerAdapterInterfaceMock adapter("start me!");
-  EXPECT_CALL(adapter, run());
+  EXPECT_CALL(adapter, start());
 
-  adapter.start();
+  EXPECT_NO_THROW(adapter.start());
+}
+
+TEST(DCAI_Test, canStop) {
+  DataConsumerAdapterInterfaceMock adapter("start me!");
+  EXPECT_CALL(adapter, stop());
+
+  EXPECT_NO_THROW(adapter.stop());
 }

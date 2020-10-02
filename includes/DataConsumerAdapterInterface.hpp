@@ -3,7 +3,6 @@
 
 #include "Listener.hpp"
 #include "LoggerRepository.hpp"
-#include "Stoppable.hpp"
 
 /**
  * @brief Data Consumer Adapter Interface
@@ -17,8 +16,7 @@ namespace DCAI {
  * @brief Generic Interface for all Data Consumer Adapter Implementations
  *
  */
-class DataConsumerAdapterInterface : public Model_Event_Handler::Listener,
-                                     public Stoppable {
+class DataConsumerAdapterInterface : public Model_Event_Handler::Listener {
 
   const std::string adapter_name_;
 
@@ -40,15 +38,29 @@ public:
 
   const std::string getAdapterName() const { return adapter_name_; }
 
-  void start() {
+  /**
+   * @brief Non-blocking start method, throws std::runtime_error if building and
+   * registration interface was not set before this method was called
+   *
+   * Implementations must use Decorator pattern for this method.
+   * Implementations should start a thread in the override of this method.
+   *
+   */
+  virtual void start() {
     adapter_logger_->log(HaSLL::SeverityLevel::INFO, "Started!");
-    Stoppable::start();
   }
 
-  void stop() {
+  /**
+   * @brief Blocking stop method. Blocks until the thread is finished working.
+   *
+   * Implementations must use Decorator pattern for this method.
+   * Implementations should call a join on the thread in the override of this
+   * method.
+   *
+   */
+  virtual void stop() {
     adapter_logger_->log(HaSLL::SeverityLevel::INFO,
                          "Received a stop command!");
-    Stoppable::stop();
   }
 };
 } // namespace DCAI

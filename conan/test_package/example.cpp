@@ -7,15 +7,6 @@ using namespace std;
 using namespace DCAI;
 
 class Fake_DCAI : public DataConsumerAdapterInterface {
-  void run() override {
-    int i = 0;
-    do {
-      cout << "Running cycle: " << i << endl;
-      i++;
-    } while (!stopRequested());
-    cout << "Stopped at cycle: " << i << endl;
-  }
-
   void
   handleEvent(shared_ptr<Model_Event_Handler::NotifierEvent> event) override {
     cout << "Received an event! " << endl;
