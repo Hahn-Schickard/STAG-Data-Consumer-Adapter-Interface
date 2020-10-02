@@ -1,3 +1,14 @@
+## [0.1.1] - 2020.09.28
+### Changed 
+ - Model Event Handler to v0.1.1
+ - DataConsumerAdapterInterface start and stop methods declaration 
+
+### Added
+ - Documentation to DataConsumerAdapterInterface start and stop methods
+
+### Removed
+ - Stoppable class
+
 ## [0.1.0] - 2020.09.21
 ### Changed 
  - CMakeLists.txt 

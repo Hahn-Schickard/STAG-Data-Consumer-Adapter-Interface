@@ -2,26 +2,44 @@ from conans import ConanFile, CMake, tools
 from conans.tools import load
 import re
 import os
+import shutil
 
 
 class PackageConan(ConanFile):
     license = "Apache 2.0"
     topics = ("conan", "stag", "modelling")
     build_requires = "gtest/1.10.0"
-    requires = "HaSLL/0.2.2@hahn-schickard/stable", "Model_Event_Handler/0.1.0@hahn-schickard/stable"
+    requires = [
+        "HaSLL/0.2.2@hahn-schickard/stable",
+        "Model_Event_Handler/0.1.2@hahn-schickard/stable"
+    ]
     settings = "cppstd", "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
                "fPIC": [True, False]}
     default_options = {"shared": True,
                        "fPIC": True}
     default_user = "Hahn-Schickard"
-    exports_sources = "../*", "!../conan/*", "!../build/*", "!../.vscode/*", "!../.gitlab/*", "!../log/*",
+    exports_sources = [
+        "../cmake*",
+        "../includes*",
+        "../sources*",
+        "../unit_tests*",
+        "../CMakeLists.txt",
+        "../conanfile.txt",
+        "../README.md",
+        "../LICENSE",
+        "../NOTICE",
+        "../AUTHORS",
+    ]
     _cmake = None
 
-    def set_name(self):
+    @property
+    def _source_subfolder(self):
         current_file_loc = os.path.dirname(os.path.realpath(__file__))
-        root_dir = os.path.join(current_file_loc, "..")
-        content = load(os.path.join(root_dir, "CMakeLists.txt"))
+        return os.path.join(current_file_loc, "..")
+
+    def set_name(self):
+        content = load(os.path.join(self._source_subfolder, "CMakeLists.txt"))
         name = re.search("set\(THIS (.*)\)", content).group(1)
         self.name = name.strip()
 
@@ -34,7 +52,8 @@ class PackageConan(ConanFile):
             return self._cmake
         self._cmake = CMake(self)
         self._cmake.verbose = True
-        self._cmake.configure()
+        self._cmake.configure(build_dir=os.path.join(
+            self.build_folder, "build"))
         return self._cmake
 
     def build(self):
@@ -45,6 +64,11 @@ class PackageConan(ConanFile):
     def package(self):
         cmake = self._configure_cmake()
         cmake.install()
+        self.copy(pattern="LICENSE", dst="licenses",
+                  src=self._source_subfolder)
+        self.copy(pattern="NOTICE", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="AUTHORS", dst="licenses",
+                  src=self._source_subfolder)
 
     def package_info(self):
         self.cpp_info.names["cmake_find_package"] = self.name

@@ -13,7 +13,8 @@ public:
       : DataConsumerAdapterInterface(name) {}
   MOCK_METHOD1(handleEvent,
                void(std::shared_ptr<Model_Event_Handler::NotifierEvent> event));
-  MOCK_METHOD0(run, void());
+  MOCK_METHOD0(start, void());
+  MOCK_METHOD0(stop, void());
 };
 } // namespace testing
 } // namespace DCAI
