@@ -18,7 +18,8 @@ find_package(GTest REQUIRED)
 add_library(${THIS} INTERFACE)
 
 target_link_libraries(${THIS} INTERFACE 
-                              Model_Event_Handler::Model_Event_Handler
+                              Event_Model::Event_Model
+                              Information_Model::Information_Model
                               HaSLL::HaSLL
                               GTest::GTest
 )

@@ -1,9 +1,12 @@
 #ifndef __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 #define __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 
-#include "Listener.hpp"
+#include "Device.hpp"
+#include "Event_Model.hpp"
 #include "LoggerRepository.hpp"
 
+#include <memory>
+#include <variant>
 /**
  * @brief Data Consumer Adapter Interface
  * This namespace containes all of the information, required by the Information
@@ -12,20 +15,26 @@
  * @date 04.12.2019
  */
 namespace DCAI {
+
+using ModelRegistryEvent =
+    std::variant<std::string, std::shared_ptr<Information_Model::Device>>;
+
 /**
  * @brief Generic Interface for all Data Consumer Adapter Implementations
  *
  */
-class DataConsumerAdapterInterface : public Model_Event_Handler::Listener {
+class DataConsumerAdapterInterface
+    : public Event_Model::EventListener<ModelRegistryEvent> {
+  using LoggerPtr = std::shared_ptr<HaSLL::Logger>;
 
   const std::string adapter_name_;
-
-protected:
-  std::shared_ptr<HaSLL::Logger> adapter_logger_;
+  LoggerPtr adapter_logger_;
 
 public:
-  DataConsumerAdapterInterface(const std::string &name)
-      : adapter_name_(name),
+  DataConsumerAdapterInterface(
+      const std::string &name,
+      Event_Model::EventSourceInterfacePtr<ModelRegistryEvent> event_source)
+      : EventListener(event_source), adapter_name_(name),
         adapter_logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
             adapter_name_)) {
     adapter_logger_->log(
@@ -37,6 +46,8 @@ public:
   ~DataConsumerAdapterInterface() = default;
 
   const std::string getAdapterName() const { return adapter_name_; }
+
+  LoggerPtr getLogger() { return adapter_logger_; }
 
   /**
    * @brief Non-blocking start method, throws std::runtime_error if building and

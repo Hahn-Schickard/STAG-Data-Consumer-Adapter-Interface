@@ -9,10 +9,18 @@ namespace DCAI {
 namespace testing {
 class DataConsumerAdapterInterfaceMock : public DataConsumerAdapterInterface {
 public:
-  DataConsumerAdapterInterfaceMock(const std::string &name)
-      : DataConsumerAdapterInterface(name) {}
-  MOCK_METHOD1(handleEvent,
-               void(std::shared_ptr<Model_Event_Handler::NotifierEvent> event));
+  DataConsumerAdapterInterfaceMock(
+      const std::string &name,
+      Event_Model::EventSourceInterfacePtr<ModelRegistryEvent> event_source)
+      : DataConsumerAdapterInterface(name, event_source) {
+    ON_CALL(*this, start).WillByDefault([this]() {
+      DataConsumerAdapterInterface::start();
+    });
+    ON_CALL(*this, stop).WillByDefault([this]() {
+      DataConsumerAdapterInterface::stop();
+    });
+  }
+  MOCK_METHOD1(handleEvent, void(std::shared_ptr<ModelRegistryEvent> event));
   MOCK_METHOD0(start, void());
   MOCK_METHOD0(stop, void());
 };
