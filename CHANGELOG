@@ -3,7 +3,7 @@
  - Model_Event_Handler
 
 ### Added 
- - Informaiton Model 0.1.2
+ - Information Model 0.1.2
  - Event_Model 0.1.0
  - ModelRegistryEvent
  - getLogger method
