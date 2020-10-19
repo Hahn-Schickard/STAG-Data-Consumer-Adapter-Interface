@@ -18,6 +18,8 @@ namespace DCAI {
 
 using ModelRegistryEvent =
     std::variant<std::string, std::shared_ptr<Information_Model::Device>>;
+using ModelEventSourcePtr =
+      std::shared_ptr<Event_Model::EventSourceInterface<ModelRegistryEvent>>;
 
 /**
  * @brief Generic Interface for all Data Consumer Adapter Implementations
@@ -33,7 +35,7 @@ class DataConsumerAdapterInterface
 public:
   DataConsumerAdapterInterface(
       const std::string &name,
-      Event_Model::EventSourceInterfacePtr<ModelRegistryEvent> event_source)
+      ModelEventSourcePtr event_source)
       : EventListener(event_source), adapter_name_(name),
         adapter_logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
             adapter_name_)) {
