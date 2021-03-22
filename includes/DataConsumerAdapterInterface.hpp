@@ -25,30 +25,25 @@ using ModelEventSourcePtr =
  * @brief Generic Interface for all Data Consumer Adapter Implementations
  *
  */
-class DataConsumerAdapterInterface
+struct DataConsumerAdapterInterface
     : public Event_Model::EventListener<ModelRegistryEvent> {
-  using LoggerPtr = std::shared_ptr<HaSLL::Logger>;
 
-  const std::string adapter_name_;
-  LoggerPtr adapter_logger_;
-
-public:
-  DataConsumerAdapterInterface(const std::string &name,
-                               ModelEventSourcePtr event_source)
+  DataConsumerAdapterInterface(ModelEventSourcePtr event_source,
+                               const std::string &name)
       : EventListener(event_source), adapter_name_(name),
-        adapter_logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
+        logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
             adapter_name_)) {
-    adapter_logger_->log(
+    logger_->log(
         HaSLL::SeverityLevel::TRACE,
         "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
         adapter_name_);
   }
 
-  ~DataConsumerAdapterInterface() = default;
+  virtual ~DataConsumerAdapterInterface() {
+    HaSLL::LoggerRepository::getInstance().deregisterLoger(adapter_name_);
+  }
 
   const std::string getAdapterName() const { return adapter_name_; }
-
-  LoggerPtr getLogger() { return adapter_logger_; }
 
   /**
    * @brief Non-blocking start method, throws std::runtime_error if building and
@@ -58,9 +53,7 @@ public:
    * Implementations should start a thread in the override of this method.
    *
    */
-  virtual void start() {
-    adapter_logger_->log(HaSLL::SeverityLevel::INFO, "Started!");
-  }
+  virtual void start() { logger_->log(HaSLL::SeverityLevel::INFO, "Started!"); }
 
   /**
    * @brief Blocking stop method. Blocks until the thread is finished working.
@@ -71,10 +64,19 @@ public:
    *
    */
   virtual void stop() {
-    adapter_logger_->log(HaSLL::SeverityLevel::INFO,
-                         "Received a stop command!");
+    logger_->log(HaSLL::SeverityLevel::INFO, "Received a stop command!");
   }
+
+private:
+  const std::string adapter_name_;
+
+protected:
+  std::shared_ptr<HaSLL::Logger> logger_;
 };
+
+using DataConsumerAdapterInterfacePtr =
+    std::shared_ptr<DataConsumerAdapterInterface>;
+using DCAI_Ptr = DataConsumerAdapterInterfacePtr;
 } // namespace DCAI
 
 #endif //__DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
