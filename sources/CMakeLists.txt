@@ -27,7 +27,7 @@ target_link_libraries(${THIS} INTERFACE
 target_include_directories(${THIS} INTERFACE
                            $<BUILD_INTERFACE:${INCLUDES_DIR}>
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/mocks>
-                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 
 target_compile_features(${THIS} INTERFACE cxx_std_17)
@@ -40,10 +40,10 @@ install(
 
 install(
     FILES ${THIS_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 )
 
 install(
     FILES ${THIS_MOCK_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/mocks
 )
