@@ -1,7 +1,7 @@
 #ifndef __DATA_CONSUMER_ADAPTER_INTERFACE_MOCK_HPP_
 #define __DATA_CONSUMER_ADAPTER_INTERFACE_MOCK_HPP_
 
-#include "DataConsumerAdapterInterface.hpp"
+#include "../DataConsumerAdapterInterface.hpp"
 
 #include <gmock/gmock.h>
 
