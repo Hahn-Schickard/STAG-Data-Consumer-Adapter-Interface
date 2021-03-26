@@ -1,5 +1,5 @@
 #include "Data_Consumer_Adapter_Interface/DataConsumerAdapterInterface.hpp"
-#include "Event_Model.hpp"
+#include "Event_Model/EventSource.hpp"
 #include "Information_Model/mocks/DeviceMockBuilder.hpp"
 #include "LoggerRepository.hpp"
 #include "Variant_Visitor.hpp"
