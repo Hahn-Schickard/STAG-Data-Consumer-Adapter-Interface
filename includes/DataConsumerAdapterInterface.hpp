@@ -1,7 +1,7 @@
 #ifndef __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 #define __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 
-#include "Event_Model.hpp"
+#include "Event_Model/EventListenerInterface.hpp"
 #include "Information_Model/Device.hpp"
 #include "LoggerRepository.hpp"
 
@@ -26,11 +26,11 @@ using ModelEventSourcePtr =
  *
  */
 struct DataConsumerAdapterInterface
-    : public Event_Model::EventListener<ModelRegistryEvent> {
+    : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
 
   DataConsumerAdapterInterface(ModelEventSourcePtr event_source,
                                const std::string &name)
-      : EventListener(event_source), adapter_name_(name),
+      : EventListenerInterface(event_source), adapter_name_(name),
         logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
             adapter_name_)) {
     logger_->log(

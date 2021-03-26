@@ -12,7 +12,7 @@ class PackageConan(ConanFile):
         "gtest/1.10.0",
         "HaSLL/0.2.2@hahn-schickard/stable",
         "Information_Model/0.1.5@hahn-schickard/stable",
-        "Event_Model/0.1.0@hahn-schickard/stable"
+        "Event_Model/0.2.0@hahn-schickard/stable"
     ]
     settings = "cppstd", "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
