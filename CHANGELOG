@@ -1,6 +1,12 @@
-##[0.1.5] - Unreleased
+##[0.1.5] - 2021.04.01
 ### Changed 
  - Event_Model to 0.2.0
+ - include paths to resolve potential header name collisions 
+ - example.cpp in conan package integration test to use new include paths
+
+### Added 
+ - main runner to showcase usage
+ - valgrind checks
 
 ## [0.1.4] - 2020.11.16
 ### Changed
