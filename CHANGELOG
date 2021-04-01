@@ -1,5 +1,6 @@
 ##[0.1.5] - 2021.04.01
 ### Changed 
+ - Information_Model to 0.1.5
  - Event_Model to 0.2.0
  - include paths to resolve potential header name collisions 
  - example.cpp in conan package integration test to use new include paths
