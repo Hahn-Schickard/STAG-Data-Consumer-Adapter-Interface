@@ -9,7 +9,7 @@
 #include <variant>
 /**
  * @brief Data Consumer Adapter Interface
- * This namespace containes all of the information, required by the Information
+ * This namespace contains all of the information, required by the Information
  * Model Manager.
  * @author Dovydas Girdvainis
  * @date 04.12.2019
