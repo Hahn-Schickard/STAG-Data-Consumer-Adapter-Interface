@@ -1,3 +1,10 @@
+##[0.1.8] - 2021.11.05
+### Changed
+  - Information_Model to 0.1.6
+
+### Fixed
+ - typos in Changelog
+
 ##[0.1.7] - 2021.09.17
 ### Changed
   - Event Model to 0.3.1 
@@ -63,7 +70,7 @@
 ## [0.1.0] - 2020.09.21
 ### Changed 
  - CMakeLists.txt 
- - Readme to reflect conan and python 3 dependnecies
+ - Readme to reflect conan and python 3 dependencies
  - utility scripts to work with python3
 
 ### Removed 
@@ -79,7 +86,7 @@
  - License
  - Notice
  - Authors 
- - Sepertate _MOCKs
+ - Separate _MOCKs
  - Gtests runner
  - global logger instance for unit tests
 
