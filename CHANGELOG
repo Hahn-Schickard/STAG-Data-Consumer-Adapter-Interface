@@ -1,3 +1,7 @@
+## [0.1.9] - 2022.02.02
+### Changed
+ - Information_Model dependency version to 0.2.0
+
 ## [0.1.8] - 2021.11.05
 ### Changed
   - Information_Model to 0.1.6
