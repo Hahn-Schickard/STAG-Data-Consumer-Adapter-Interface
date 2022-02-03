@@ -40,7 +40,7 @@ private:
               throw runtime_error(error_msg);
             }
           },
-          [&](DevicePtr device) {
+          [&](NonemptyDevicePtr device) {
             auto emplaced = devices_.emplace(device->getElementId());
             if (emplaced.second) {
               this->logger_->log(SeverityLevel::TRACE,
@@ -80,8 +80,8 @@ public:
             bind(&EventSourceFake::handleException, this, placeholders::_1)),
         logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
-  void registerDevice(DevicePtr device) {
-    auto event = make_shared<ModelRegistryEvent>(device);
+  void registerDevice(NonemptyDevicePtr device) {
+    auto event = std::make_shared<ModelRegistryEvent>(device);
     logger_->log(
         SeverityLevel::TRACE,
         "Notifing listeners that Device {} is available for registration.",
@@ -114,7 +114,7 @@ int main() {
     auto builder = new Information_Model::testing::DeviceMockBuilder();
     builder->buildDeviceBase(device_id, "Mocky",
                              "A mocked device with no elements");
-    auto result = builder->getResult();
+    NonemptyDevicePtr result(builder->getResult());
     event_source->registerDevice(result);
     event_source->registerDevice(
         result); // check if double registration is handeled

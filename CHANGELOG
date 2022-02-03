@@ -1,6 +1,7 @@
-## [0.1.9] - 2022.02.02
+## [0.1.9] - NOT YET RELEASED
 ### Changed
  - Information_Model dependency version to 0.2.0
+ - ModelRegistryEvent to use NonemptyDevicePtr
 
 ## [0.1.8] - 2021.11.05
 ### Changed

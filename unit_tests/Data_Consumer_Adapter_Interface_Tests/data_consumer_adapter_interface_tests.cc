@@ -31,8 +31,9 @@ TEST(DCAI_Test, canHandleEvent) {
   auto adapter =
       make_shared<DataConsumerAdapterInterfaceMock>(event_source, "adopt me!");
 
-  shared_ptr<ModelRegistryEvent> event = make_shared<ModelRegistryEvent>(
-      make_shared<MockDevice>("12345", "Mock", "Mock device"));
+  shared_ptr<ModelRegistryEvent> event = std::make_shared<ModelRegistryEvent>(
+      Information_Model::NonemptyDevicePtr(
+        std::make_shared<MockDevice>("12345", "Mock", "Mock device")));
   EXPECT_CALL(*adapter, handleEvent(event)).Times(1);
 
   event_source->sendEvent(event);
