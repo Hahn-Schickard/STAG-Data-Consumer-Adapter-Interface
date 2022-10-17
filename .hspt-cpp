@@ -1,0 +1,12 @@
+{
+    "project_template": "cpp",
+    "project_template_version": "Release_v0.0.0",
+    "project_name_long": "Data Consumer Adapter Interface",
+    "project_name_short": "Data_Consumer_Adapter_Interface",
+    "project_description": "This interface provides access to the [Event_Source](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/cpp-projects/event-model), set by STAG [Information Model Manager](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/information-model-manager) and must be implemented by all Data Consumer Adapter Implementations",
+    "license": "Apache v2",
+    "ci_configuration": "multi-system",
+    "gitignore": true,
+    "contribution_guide": true,
+    "code_formatting": true
+}

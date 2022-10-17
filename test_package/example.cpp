@@ -1,7 +1,8 @@
 #include "Data_Consumer_Adapter_Interface/DataConsumerAdapterInterface.hpp"
 #include "Event_Model/AsyncEventSource.hpp"
+#include "HaSLL/LoggerManager.hpp"
+#include "HaSLL/SPD_LoggerRepository.hpp"
 #include "Information_Model/mocks/DeviceMockBuilder.hpp"
-#include "LoggerRepository.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <set>
@@ -21,38 +22,37 @@ struct DCAI_Example : DataConsumerAdapterInterface {
   }
 
   void stop() override final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Received a stop command!",
-                       getAdapterName());
+    this->logger_->log(
+        SeverityLevel::TRACE, "{} Received a stop command!", getAdapterName());
     DataConsumerAdapterInterface::stop();
   }
 
 private:
   void handleEvent(shared_ptr<ModelRegistryEvent> event) {
     this->logger_->log(SeverityLevel::TRACE, "Received an event!");
-    match(*event.get(),
-          [&](string identifier) {
-            auto it = devices_.find(identifier);
-            if (it != devices_.end()) {
-              this->logger_->log(SeverityLevel::TRACE,
-                                 "Device: {} was deregistered!", identifier);
-            } else {
-              string error_msg = "Device " + identifier + " does not exist!";
-              throw runtime_error(error_msg);
-            }
-          },
-          [&](NonemptyDevicePtr device) {
-            auto emplaced = devices_.emplace(device->getElementId());
-            if (emplaced.second) {
-              this->logger_->log(SeverityLevel::TRACE,
-                                 "Device: {} was registered!",
-                                 device->getElementName());
-            } else {
-              this->logger_->log(
-                  SeverityLevel::TRACE,
-                  "Device: {} was already registered. Ignoring new instance!",
-                  device->getElementName());
-            }
-          });
+    match(
+        *event.get(),
+        [&](string identifier) {
+          auto it = devices_.find(identifier);
+          if (it != devices_.end()) {
+            this->logger_->log(SeverityLevel::TRACE,
+                "Device: {} was deregistered!", identifier);
+          } else {
+            string error_msg = "Device " + identifier + " does not exist!";
+            throw runtime_error(error_msg);
+          }
+        },
+        [&](NonemptyDevicePtr device) {
+          auto emplaced = devices_.emplace(device->getElementId());
+          if (emplaced.second) {
+            this->logger_->log(SeverityLevel::TRACE,
+                "Device: {} was registered!", device->getElementName());
+          } else {
+            this->logger_->log(SeverityLevel::TRACE,
+                "Device: {} was already registered. Ignoring new instance!",
+                device->getElementName());
+          }
+        });
   }
 
   set<string> devices_;
@@ -61,16 +61,15 @@ private:
 class EventSourceFake
     : public Event_Model::AsyncEventSource<ModelRegistryEvent> {
 
-  shared_ptr<Logger> logger_;
+  LoggerPtr logger_;
 
   void handleException(std::exception_ptr ex_ptr) {
     try {
       if (ex_ptr)
         rethrow_exception(ex_ptr);
-    } catch (exception &ex) {
+    } catch (exception& ex) {
       logger_->log(SeverityLevel::ERROR,
-                   "An exception occurred while notifing a listener: {}",
-                   ex.what());
+          "An exception occurred while notifing a listener: {}", ex.what());
     }
   }
 
@@ -78,12 +77,11 @@ public:
   EventSourceFake()
       : AsyncEventSource(
             bind(&EventSourceFake::handleException, this, placeholders::_1)),
-        logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+        logger_(LoggerManager::registerTypedLogger(this)) {}
 
   void registerDevice(NonemptyDevicePtr device) {
     auto event = std::make_shared<ModelRegistryEvent>(device);
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is available for registration.",
         device->getElementId());
     notify(move(event));
@@ -92,17 +90,17 @@ public:
   void deregisterDevice(string identifier) {
     auto event = make_shared<ModelRegistryEvent>(identifier);
     logger_->log(SeverityLevel::TRACE,
-                 "Notifing listeners that Device {} is no longer available",
-                 identifier);
+        "Notifing listeners that Device {} is no longer available", identifier);
     notify(move(event));
   }
 };
 
 int main() {
-  auto config = HaSLL::Configuration(
-      "./log", "logfile.log", "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$",
-      HaSLL::SeverityLevel::TRACE, true, 8192, 2, 25, 100, 1);
-  HaSLL::LoggerRepository::initialise(config);
+  auto config = HaSLL::SPD_Configuration("./log", "logfile.log",
+      "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$", HaSLL::SeverityLevel::TRACE,
+      true, 8192, 2, 25, 100, 1);
+  auto repo = make_shared<SPD_LoggerRepository>(config);
+  LoggerManager::initialise(repo);
 
   auto event_source = make_shared<EventSourceFake>();
   auto dcai = DCAI_Example(event_source);
@@ -112,8 +110,8 @@ int main() {
   string device_id = "1234";
   {
     auto builder = new Information_Model::testing::DeviceMockBuilder();
-    builder->buildDeviceBase(device_id, "Mocky",
-                             "A mocked device with no elements");
+    builder->buildDeviceBase(
+        device_id, "Mocky", "A mocked device with no elements");
     NonemptyDevicePtr result(builder->getResult());
     event_source->registerDevice(result);
     event_source->registerDevice(
