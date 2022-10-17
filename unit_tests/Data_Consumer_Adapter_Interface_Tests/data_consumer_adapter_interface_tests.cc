@@ -31,31 +31,31 @@ TEST(DCAI_Test, canHandleEvent) {
   auto adapter =
       make_shared<DataConsumerAdapterInterfaceMock>(event_source, "adopt me!");
 
-  shared_ptr<ModelRegistryEvent> event = std::make_shared<ModelRegistryEvent>(
-      Information_Model::NonemptyDevicePtr(
-        std::make_shared<MockDevice>("12345", "Mock", "Mock device")));
+  shared_ptr<ModelRegistryEvent> event =
+      std::make_shared<ModelRegistryEvent>(Information_Model::NonemptyDevicePtr(
+          std::make_shared<MockDevice>("12345", "Mock", "Mock device")));
   EXPECT_CALL(*adapter, handleEvent(event)).Times(1);
 
   event_source->sendEvent(event);
 }
 
 TEST(DCAI_Test, canStart) {
-  DataConsumerAdapterInterfaceMock adapter(make_shared<EventSourceFake>(),
-                                           "start me!");
+  DataConsumerAdapterInterfaceMock adapter(
+      make_shared<EventSourceFake>(), "start me!");
   EXPECT_CALL(adapter, start());
 
   EXPECT_NO_THROW(adapter.start());
 }
 
 TEST(DCAI_Test, canGetLogger) {
-  DataConsumerAdapterInterfaceMock adapter(make_shared<EventSourceFake>(),
-                                           "start me!");
+  DataConsumerAdapterInterfaceMock adapter(
+      make_shared<EventSourceFake>(), "start me!");
   EXPECT_NE(adapter.getLogger(), nullptr);
 }
 
 TEST(DCAI_Test, canStop) {
-  DataConsumerAdapterInterfaceMock adapter(make_shared<EventSourceFake>(),
-                                           "start me!");
+  DataConsumerAdapterInterfaceMock adapter(
+      make_shared<EventSourceFake>(), "start me!");
   EXPECT_CALL(adapter, stop());
 
   EXPECT_NO_THROW(adapter.stop());

@@ -2,8 +2,8 @@
 #define __DATA_CONSUMER_ADAPTER_INTERFACE_HPP_
 
 #include "Event_Model/EventListenerInterface.hpp"
+#include "HaSLL/LoggerManager.hpp"
 #include "Information_Model/Device.hpp"
-#include "LoggerRepository.hpp"
 
 #include <memory>
 #include <variant>
@@ -28,20 +28,16 @@ using ModelEventSourcePtr =
 struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
 
-  DataConsumerAdapterInterface(ModelEventSourcePtr event_source,
-                               const std::string &name)
+  DataConsumerAdapterInterface(
+      ModelEventSourcePtr event_source, const std::string& name)
       : EventListenerInterface(event_source), adapter_name_(name),
-        logger_(HaSLL::LoggerRepository::getInstance().registerLoger(
-            adapter_name_)) {
-    logger_->log(
-        HaSLL::SeverityLevel::TRACE,
+        logger_(HaSLI::LoggerManager::registerLogger(adapter_name_)) {
+    logger_->log(HaSLI::SeverityLevel::TRACE,
         "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
         adapter_name_);
   }
 
-  virtual ~DataConsumerAdapterInterface() {
-    HaSLL::LoggerRepository::getInstance().deregisterLoger(adapter_name_);
-  }
+  virtual ~DataConsumerAdapterInterface() = default;
 
   const std::string getAdapterName() const { return adapter_name_; }
 
@@ -53,7 +49,7 @@ struct DataConsumerAdapterInterface
    * Implementations should start a thread in the override of this method.
    *
    */
-  virtual void start() { logger_->log(HaSLL::SeverityLevel::INFO, "Started!"); }
+  virtual void start() { logger_->log(HaSLI::SeverityLevel::INFO, "Started!"); }
 
   /**
    * @brief Blocking stop method. Blocks until the thread is finished working.
@@ -64,14 +60,14 @@ struct DataConsumerAdapterInterface
    *
    */
   virtual void stop() {
-    logger_->log(HaSLL::SeverityLevel::INFO, "Received a stop command!");
+    logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
   }
 
 private:
   const std::string adapter_name_;
 
 protected:
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 };
 
 using DataConsumerAdapterInterfacePtr =

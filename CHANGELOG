@@ -12,23 +12,23 @@
 
 ## [0.1.7] - 2021.09.17
 ### Changed
-  - Event Model to 0.3.1 
+  - Event Model to 0.3.1
 
 ## [0.1.6] - 2021.08.09
-### Changed 
+### Changed
  - Event Model to 0.3.0
  - integration test to use AsyncEventSource
  - integration test to fully utilize logging
  - integration test to test for exception handling
 
 ## [0.1.5] - 2021.04.01
-### Changed 
+### Changed
  - Information_Model to 0.1.5
  - Event_Model to 0.2.0
- - include paths to resolve potential header name collisions 
+ - include paths to resolve potential header name collisions
  - example.cpp in conan package integration test to use new include paths
 
-### Added 
+### Added
  - main runner to showcase usage
  - valgrind checks
 
@@ -41,7 +41,7 @@
 ### Removed
  - Model_Event_Handler
 
-### Added 
+### Added
  - Information Model 0.1.2
  - Event_Model 0.1.0
  - ModelRegistryEvent
@@ -50,7 +50,7 @@
  - delegate to start method for DataConsumerAdapterInterfaceMock
  - delegate to stop method for DataConsumerAdapterInterfaceMock
 
- ### Changed 
+ ### Changed
   - DataConsumerAdapterInterface to implement Event_Model::EventListener
   - unit tests to use Event_Model
   - adapter_logger to private
@@ -58,9 +58,9 @@
   - main.md
 
 ## [0.1.2] - 2020.10.02
-### Changed 
+### Changed
  - Model Event Handler to v0.1.1
- - DataConsumerAdapterInterface start and stop methods declaration 
+ - DataConsumerAdapterInterface start and stop methods declaration
 
 ### Added
  - Documentation to DataConsumerAdapterInterface start and stop methods
@@ -69,37 +69,37 @@
  - Stoppable class
 
 ## [0.1.1] - 2020.09.28
-### Changed 
+### Changed
  - Model Event Handler to v0.1.1
 
 ## [0.1.0] - 2020.09.21
-### Changed 
- - CMakeLists.txt 
+### Changed
+ - CMakeLists.txt
  - Readme to reflect conan and python 3 dependencies
  - utility scripts to work with python3
 
-### Removed 
- - Cpack configuration 
+### Removed
+ - Cpack configuration
  - ExternalProjectAdd usage
  - Google test dependency
 
-### Added 
+### Added
  - conan package configuration
  - conan package integration test
  - Contributing
- - Changelog 
+ - Changelog
  - License
  - Notice
- - Authors 
+ - Authors
  - Separate _MOCKs
  - Gtests runner
  - global logger instance for unit tests
 
-## [0.0.1] - 2019.12.07 
-### Added 
- - DataConsumerAdapterInterface 
-
-
-## [Initial Commit] - 2019.12.07 
+## [0.0.1] - 2019.12.07
 ### Added
- - Set up project on Cpp Project Template v0.8.27 
+ - DataConsumerAdapterInterface
+
+
+## [Initial Commit] - 2019.12.07
+### Added
+ - Set up project on Cpp Project Template v0.8.27
