@@ -18,8 +18,7 @@ struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
       DataConsumerAdapterInterface::stop();
     });
   }
-  MOCK_METHOD(
-      void, handleEvent, (std::shared_ptr<ModelRegistryEvent>), (override));
+  MOCK_METHOD(void, handleEvent, (ModelRegistryEventPtr), (override));
   MOCK_METHOD(void, start, (), (override));
   MOCK_METHOD(void, stop, (), (override));
 

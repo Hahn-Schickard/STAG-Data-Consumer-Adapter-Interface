@@ -5,6 +5,7 @@
 #include "Information_Model/mocks/DeviceMockBuilder.hpp"
 #include "Variant_Visitor.hpp"
 
+#include <iostream>
 #include <set>
 
 using namespace std;
@@ -16,23 +17,23 @@ struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
       : DataConsumerAdapterInterface(source, "Example DCAI") {}
 
-  void start() override final {
+  void start() final {
     this->logger_->log(SeverityLevel::TRACE, "{} Started!", getAdapterName());
     DataConsumerAdapterInterface::start();
   }
 
-  void stop() override final {
+  void stop() final {
     this->logger_->log(
         SeverityLevel::TRACE, "{} Received a stop command!", getAdapterName());
     DataConsumerAdapterInterface::stop();
   }
 
 private:
-  void handleEvent(shared_ptr<ModelRegistryEvent> event) {
+  void handleEvent(ModelRegistryEventPtr event) override {
     this->logger_->log(SeverityLevel::TRACE, "Received an event!");
     match(
-        *event.get(),
-        [&](string identifier) {
+        event,
+        [&](const string& identifier) {
           auto it = devices_.find(identifier);
           if (it != devices_.end()) {
             this->logger_->log(SeverityLevel::TRACE,
@@ -63,13 +64,14 @@ class EventSourceFake
 
   LoggerPtr logger_;
 
-  void handleException(std::exception_ptr ex_ptr) {
+  void handleException(std::exception_ptr ex_ptr) { // NOLINT
     try {
-      if (ex_ptr)
+      if (ex_ptr) {
         rethrow_exception(ex_ptr);
+      }
     } catch (exception& ex) {
       logger_->log(SeverityLevel::ERROR,
-          "An exception occurred while notifing a listener: {}", ex.what());
+          "An exception occurred while notifying a listener: {}", ex.what());
     }
   }
 
@@ -96,35 +98,40 @@ public:
 };
 
 int main() {
-  auto config = HaSLL::SPD_Configuration("./log", "logfile.log",
-      "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$", HaSLL::SeverityLevel::TRACE,
-      true, 8192, 2, 25, 100, 1);
-  auto repo = make_shared<SPD_LoggerRepository>(config);
-  LoggerManager::initialise(repo);
+  try {
+    auto config = HaSLL::SPD_Configuration("./log", "logfile.log",
+        "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$",
+        HaSLL::SeverityLevel::TRACE, true, 8192, 2, 25, 100, 1); // NOLINT
+    auto repo = make_shared<SPD_LoggerRepository>(config);
+    LoggerManager::initialise(repo);
 
-  auto event_source = make_shared<EventSourceFake>();
-  auto dcai = DCAI_Example(event_source);
+    auto event_source = make_shared<EventSourceFake>();
+    auto dcai = DCAI_Example(event_source);
 
-  dcai.start();
+    dcai.start();
 
-  string device_id = "1234";
-  {
-    auto builder = new Information_Model::testing::DeviceMockBuilder();
-    builder->buildDeviceBase(
-        device_id, "Mocky", "A mocked device with no elements");
-    NonemptyDevicePtr result(builder->getResult());
-    event_source->registerDevice(result);
-    event_source->registerDevice(
-        result); // check if double registration is handeled
-    delete builder;
+    string device_id = "1234";
+    {
+      auto* builder = new Information_Model::testing::DeviceMockBuilder();
+      builder->buildDeviceBase(
+          device_id, "Mocky", "A mocked device with no elements");
+      NonemptyDevicePtr result(builder->getResult());
+      event_source->registerDevice(result);
+      event_source->registerDevice(
+          result); // check if double registration is handeled
+      delete builder;
+    }
+
+    event_source->deregisterDevice(device_id);
+    event_source->deregisterDevice("nonsense ID"); // check bad ID deregister
+
+    this_thread::sleep_for(2s);
+
+    dcai.stop();
+
+    return EXIT_SUCCESS;
+  } catch (const exception& ex) {
+    cerr << ex.what();
+    return EXIT_FAILURE;
   }
-
-  event_source->deregisterDevice(device_id);
-  event_source->deregisterDevice("noncense ID"); // check bad ID deregister
-
-  this_thread::sleep_for(2s);
-
-  dcai.stop();
-
-  return EXIT_SUCCESS;
 }

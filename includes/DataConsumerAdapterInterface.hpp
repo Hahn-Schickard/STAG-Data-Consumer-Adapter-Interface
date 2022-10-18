@@ -18,6 +18,7 @@ namespace DCAI {
 
 using ModelRegistryEvent =
     std::variant<std::string, Information_Model::NonemptyDevicePtr>;
+using ModelRegistryEventPtr = std::shared_ptr<ModelRegistryEvent>;
 using ModelEventSourcePtr =
     std::shared_ptr<Event_Model::EventSourceInterface<ModelRegistryEvent>>;
 
