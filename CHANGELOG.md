@@ -1,8 +1,26 @@
 # Changelog
-## [0.1.9] - NOT YET RELEASED
+## [0.1.9] - 2022.10.18
 ### Changed
- - Information_Model dependency version to 0.2.0
+ - Information_Model dependency version to 0.2.1
+ - Event_Model dependency version to 0.3.4
+ - HaSLL dependency version to 0.3.1
  - `ModelRegistryEvent` to use `NonemptyDevicePtr`
+ - `std::shared_ptr<HaSLL::Logger>` into `HaSLI::LoggerPtr` 
+ - `HaSLL::LoggerRepository::getInstance().*` into `HaSLI::LoggerManager::*`
+ - change logger repository initialization mechanism for example and test runners
+ - Contribution rules
+
+### Added 
+ - `ModelRegistryEventPtr` alias
+ - `override` specifier for `handleEvent()` method implementation in main.cpp
+
+### Removed 
+ - superfluous `override` specifiers
+
+### Fixed
+ - notifying typo in main and example cpp modules
+ - nonsense typo in main and example cpp modules
+ - Notice file to only include used Licenses
 
 ## [0.1.8] - 2021.11.05
 ### Changed
