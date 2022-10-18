@@ -32,7 +32,7 @@ private:
   void handleEvent(ModelRegistryEventPtr event) override {
     this->logger_->log(SeverityLevel::TRACE, "Received an event!");
     match(
-        event,
+        *event,
         [&](const string& identifier) {
           auto it = devices_.find(identifier);
           if (it != devices_.end()) {
