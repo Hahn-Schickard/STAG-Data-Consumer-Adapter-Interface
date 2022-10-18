@@ -1,7 +1,8 @@
+# Changelog
 ## [0.1.9] - NOT YET RELEASED
 ### Changed
  - Information_Model dependency version to 0.2.0
- - ModelRegistryEvent to use NonemptyDevicePtr
+ - `ModelRegistryEvent` to use `NonemptyDevicePtr`
 
 ## [0.1.8] - 2021.11.05
 ### Changed
@@ -12,12 +13,12 @@
 
 ## [0.1.7] - 2021.09.17
 ### Changed
-  - Event Model to 0.3.1
+  - Event_Model to 0.3.1
 
 ## [0.1.6] - 2021.08.09
 ### Changed
- - Event Model to 0.3.0
- - integration test to use AsyncEventSource
+ - Event_Model to 0.3.0
+ - integration test to use `AsyncEventSource`
  - integration test to fully utilize logging
  - integration test to test for exception handling
 
@@ -47,11 +48,11 @@
  - ModelRegistryEvent
  - getLogger method
  - test case to get adapter logger
- - delegate to start method for DataConsumerAdapterInterfaceMock
- - delegate to stop method for DataConsumerAdapterInterfaceMock
+ - delegate to start method for `DataConsumerAdapterInterfaceMock`
+ - delegate to stop method for `DataConsumerAdapterInterfaceMock`
 
  ### Changed
-  - DataConsumerAdapterInterface to implement Event_Model::EventListener
+  - `DataConsumerAdapterInterface` to implement `Event_Model::EventListener`
   - unit tests to use Event_Model
   - adapter_logger to private
   - Information_Model to 0.1.3
@@ -60,10 +61,10 @@
 ## [0.1.2] - 2020.10.02
 ### Changed
  - Model Event Handler to v0.1.1
- - DataConsumerAdapterInterface start and stop methods declaration
+ - `DataConsumerAdapterInterface` start and stop methods declaration
 
 ### Added
- - Documentation to DataConsumerAdapterInterface start and stop methods
+ - Documentation to `DataConsumerAdapterInterface` start and stop methods
 
 ### Removed
  - Stoppable class
@@ -97,7 +98,7 @@
 
 ## [0.0.1] - 2019.12.07
 ### Added
- - DataConsumerAdapterInterface
+ - `DataConsumerAdapterInterface`
 
 
 ## [Initial Commit] - 2019.12.07
