@@ -5,6 +5,7 @@
 #include "Information_Model/mocks/DeviceMockBuilder.hpp"
 #include "Variant_Visitor.hpp"
 
+#include <exception>
 #include <iostream>
 #include <set>
 
@@ -59,6 +60,16 @@ private:
   set<string> devices_;
 };
 
+void printException(const exception& e, int level = 0) {
+  cerr << string(level, ' ') << "Exception: " << e.what() << endl;
+  try {
+    rethrow_if_nested(e);
+  } catch (const exception& nested_exception) {
+    printException(nested_exception, level + 1);
+  } catch (...) {
+  }
+}
+
 class EventSourceFake
     : public Event_Model::AsyncEventSource<ModelRegistryEvent> {
 
@@ -69,9 +80,10 @@ class EventSourceFake
       if (ex_ptr) {
         rethrow_exception(ex_ptr);
       }
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->log(SeverityLevel::ERROR,
           "An exception occurred while notifying a listener: {}", ex.what());
+      printException(ex);
     }
   }
 
@@ -131,7 +143,7 @@ int main() {
 
     return EXIT_SUCCESS;
   } catch (const exception& ex) {
-    cerr << ex.what();
+    printException(ex);
     return EXIT_FAILURE;
   }
 }
