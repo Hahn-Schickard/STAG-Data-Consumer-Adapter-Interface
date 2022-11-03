@@ -9,7 +9,7 @@ import subprocess
 from typing import List
 
 
-def is_installed(executable: str, encoding='utf-8', throw_on_failure=True, live_print=True):
+def is_installed(executable: str, encoding='utf-8', throw_on_failure=False, live_print=True):
     try:
         print('Checking if {} is installed'.format(executable))
         process = subprocess.Popen([executable, '--version'],
@@ -40,7 +40,7 @@ class PIPE_Value:
         self.stderr = stderr
 
 
-def run_process(executable: str, arguments: [str] = [], encoding='utf-8', throw_on_failure=True, live_print=True, live_print_errors=False):
+def run_process(executable: str, arguments: [str] = [], encoding='utf-8', throw_on_failure=False, live_print=True, live_print_errors=False):
     command = [executable]
     if arguments:
         command.extend(arguments)
