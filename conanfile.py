@@ -10,7 +10,7 @@ class PackageConan(ConanFile):
     topics = ('lwm2m', 'server', 'coap')
     requires = [
         'gtest/1.10.0',
-        'HaSLL/0.3.1@hahn-schickard/stable',
+        'HaSLL/0.3.2@hahn-schickard/stable',
         'Information_Model/0.2.1@hahn-schickard/stable',
         'Event_Model/0.3.4@hahn-schickard/stable'
     ]
