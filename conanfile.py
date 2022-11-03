@@ -75,3 +75,6 @@ class PackageConan(ConanFile):
         self.cpp_info.libs = tools.collect_libs(self)
         self.output.info('Collected libs: \n{}'.format(
             '\n'.join(self.cpp_info.libs)))
+
+    def package_id(self):
+        self.info.header_only()
