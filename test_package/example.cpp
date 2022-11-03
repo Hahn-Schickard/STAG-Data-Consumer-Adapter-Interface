@@ -142,8 +142,10 @@ int main() {
     dcai.stop();
 
     return EXIT_SUCCESS;
+    cout << "Integration Test Passed" << endl;
   } catch (const exception& ex) {
     printException(ex);
+    cout << "Integration Test Failed" << endl;
     return EXIT_FAILURE;
   }
 }
