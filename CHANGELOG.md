@@ -1,4 +1,12 @@
 # Changelog
+## [0.1.10] - 2022.11.21
+### Changed
+ - conan packaging recipe
+ - gtest dependency to fuzzy v1.11
+ - Information_Model dependency to fuzzy v0.2
+ - HaSLL dependency to fuzzy v0.3
+ - Event_Model dependency to fuzzy v0.3
+
 ## [0.1.9] - 2022.11.03
 ### Changed
  - Information_Model dependency version to 0.2.1
