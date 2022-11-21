@@ -2,12 +2,11 @@ from conans import ConanFile, CMake, tools
 from conans.tools import load
 import re
 import os
-import shutil
 
 
 class PackageConan(ConanFile):
     license = "Apache 2.0"
-    topics = ('lwm2m', 'server', 'coap')
+    topics = ('stag', 'dcai', 'data-consumer-adapter-interface')
     requires = [
         'gtest/1.10.0',
         'HaSLL/0.3.2@hahn-schickard/stable',
