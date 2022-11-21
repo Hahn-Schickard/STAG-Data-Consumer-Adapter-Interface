@@ -20,7 +20,9 @@ build:ubuntu-20.04:
 
 build:fedora-32:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+    entrypoint: ["/bin/sh", "-c"]
 
 build:fedora-34:
   extends: .build
@@ -52,7 +54,9 @@ test:ubuntu-20.04:
 
 test:fedora-32:
   extends: .test
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+    entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-32"]
 
 test:fedora-34:
@@ -84,7 +88,9 @@ analyze_memory_usage:ubuntu-20.04:
 
 analyze_memory_usage:fedora-32:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+    entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-32"]
 
 analyze_memory_usage:fedora-34:
@@ -94,26 +100,48 @@ analyze_memory_usage:fedora-34:
     entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-34"]
 
-check_code_coverage:debian-buster:
+check_code_coverage:
   extends: .check_code_coverage
   image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
   needs: ["build:debian-buster", "test:debian-buster"]
 
-lint:debian-bullseye:
+lint:
   extends: .lint
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
-  needs: ["build:debian-bullseye"]
 
-document:debian-buster:
+document:
   extends: .document
   image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
-  needs: ["build:debian-bullseye"]
 
-package:stable:
+package:debian-buster:
   extends: .package
   image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
+
+package:debian-bullseye:
+  extends: .package
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
+
+package:ubuntu-18.04:
+  extends: .package
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:latest
+
+package:ubuntu-20.04:
+  extends: .package
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:latest
+
+package:fedora-32:
+  extends: .package
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
+    entrypoint: ["/bin/sh", "-c"]
+
+package:fedora-34:
+  extends: .package
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:latest
+    entrypoint: ["/bin/sh", "-c"]
 
 pages:
   extends: .pages
   image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
-  needs: ["build:debian-buster", "check_code_coverage:debian-buster", "document:debian-buster"]
+  needs: ["check_code_coverage", "document"]
