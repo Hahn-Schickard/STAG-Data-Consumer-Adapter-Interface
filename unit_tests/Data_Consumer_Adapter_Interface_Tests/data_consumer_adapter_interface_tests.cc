@@ -34,7 +34,8 @@ public:
 TEST(DCAI_Test, canHandleEvent) { // NOLINT
   auto event_source = make_shared<EventSourceFake>();
   auto adapter =
-      make_shared<DataConsumerAdapterInterfaceMock>(event_source, "adopt me!");
+      make_shared<::testing::NiceMock<DataConsumerAdapterInterfaceMock>>(
+          event_source, "adopt me!");
 
   ModelRegistryEventPtr event = std::make_shared<ModelRegistryEvent>(
       Information_Model::NonemptyDevicePtr(std::make_shared<MockDevice>(
