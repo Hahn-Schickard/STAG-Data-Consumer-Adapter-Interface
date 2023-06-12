@@ -20,14 +20,8 @@ struct DCAI_Example : DataConsumerAdapterInterface {
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
   void start() final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
+    logger_->trace("This is how you decorate the start call");
     DataConsumerAdapterInterface::start();
-  }
-
-  void stop() final {
-    this->logger_->log(
-        SeverityLevel::TRACE, "{} Received a stop command!", name);
-    DataConsumerAdapterInterface::stop();
   }
 
 private:
