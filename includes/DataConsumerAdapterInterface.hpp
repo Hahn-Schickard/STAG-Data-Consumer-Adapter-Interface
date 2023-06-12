@@ -30,17 +30,14 @@ struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
 
   DataConsumerAdapterInterface(
-      ModelEventSourcePtr event_source, const std::string& name)
-      : EventListenerInterface(event_source), adapter_name_(name),
-        logger_(HaSLI::LoggerManager::registerLogger(adapter_name_)) {
+      ModelEventSourcePtr event_source, const std::string& adapter_name)
+      : EventListenerInterface(event_source), name(adapter_name),
+        logger_(HaSLI::LoggerManager::registerLogger(name)) {
     logger_->log(HaSLI::SeverityLevel::TRACE,
-        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
-        adapter_name_);
+        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
   }
 
   virtual ~DataConsumerAdapterInterface() = default;
-
-  const std::string getAdapterName() const { return adapter_name_; }
 
   /**
    * @brief Non-blocking start method, throws std::runtime_error if building and
@@ -64,8 +61,7 @@ struct DataConsumerAdapterInterface
     logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
   }
 
-private:
-  const std::string adapter_name_;
+  const std::string name; // NOLINT(readability-identifier-naming)
 
 protected:
   HaSLI::LoggerPtr logger_;
