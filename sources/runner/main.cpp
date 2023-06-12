@@ -20,21 +20,20 @@ struct DCAI_Example : DataConsumerAdapterInterface {
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
   void start() final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", getAdapterName());
+    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
     DataConsumerAdapterInterface::start();
   }
 
   void stop() final {
     this->logger_->log(
-        SeverityLevel::TRACE, "{} Received a stop command!", getAdapterName());
+        SeverityLevel::TRACE, "{} Received a stop command!", name);
     DataConsumerAdapterInterface::stop();
   }
 
 private:
   void handleEvent(ModelRegistryEventPtr event) override {
     this->logger_->log(SeverityLevel::TRACE, "Received an event!");
-    match(
-        *event,
+    match(*event,
         [&](const string& identifier) {
           auto it = devices_.find(identifier);
           if (it != devices_.end()) {
