@@ -14,14 +14,7 @@ using namespace Information_Model::testing;
 
 namespace Information_Model {
 bool operator==(const NonemptyDevicePtr& lhs, const NonemptyDevicePtr& rhs) {
-  if (lhs->getElementId() == rhs->getElementId()) {
-    if (lhs->getElementName() == rhs->getElementName()) {
-      if (lhs->getElementDescription() == rhs->getElementDescription()) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return lhs.get() == rhs.get();
 }
 } // namespace Information_Model
 
