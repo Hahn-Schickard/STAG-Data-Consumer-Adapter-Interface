@@ -7,7 +7,7 @@
 
 namespace DCAI {
 namespace testing {
-struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
+struct DataConsumerAdapterInterfaceMock : public DataConsumerAdapterInterface {
   DataConsumerAdapterInterfaceMock(
       ModelEventSourcePtr event_source, const std::string& name)
       : DataConsumerAdapterInterface(event_source, name) {
@@ -18,7 +18,10 @@ struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
       DataConsumerAdapterInterface::stop();
     });
   }
-  MOCK_METHOD(void, handleEvent, (ModelRegistryEventPtr), (override));
+
+  MOCK_METHOD(
+      void, registrate, (Information_Model::NonemptyDevicePtr), (override));
+  MOCK_METHOD(void, deregistrate, (const std::string&), (override));
   MOCK_METHOD(void, start, (), (override));
   MOCK_METHOD(void, stop, (), (override));
 
