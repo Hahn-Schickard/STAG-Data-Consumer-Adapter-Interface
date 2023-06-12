@@ -14,6 +14,7 @@ using namespace DCAI;
 using namespace HaSLL;
 using namespace Information_Model;
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
       /* Never move into Model Event Source ptr either! */
