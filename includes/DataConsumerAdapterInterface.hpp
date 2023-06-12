@@ -66,6 +66,32 @@ struct DataConsumerAdapterInterface
   }
 
   /**
+   * @brief Non-blocking start method, throws std::runtime_error if building and
+   * registration interface was not set before this method was called
+   *
+   * Implementations must use Decorator pattern for this method.
+   * Implementations should start a thread in the override of this method.
+   *
+   */
+  virtual void start() { logger_->log(HaSLI::SeverityLevel::INFO, "Started!"); }
+
+  /**
+   * @brief Blocking stop method. Blocks until the thread is finished working.
+   *
+   * Implementations must use Decorator pattern for this method.
+   * Implementations should call a join on the thread in the override of this
+   * method.
+   *
+   */
+  virtual void stop() {
+    logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
+  }
+
+private:
+  const std::string adapter_name_;
+
+protected:
+  /**
    * @brief Adds a given device instance to Data Consumer Adapter
    * implementation. Blocks all other calls to registrate() method until device
    * abstraction registration is finished
@@ -101,32 +127,6 @@ struct DataConsumerAdapterInterface
     throw std::runtime_error(error_msg);
   }
 
-  /**
-   * @brief Non-blocking start method, throws std::runtime_error if building and
-   * registration interface was not set before this method was called
-   *
-   * Implementations must use Decorator pattern for this method.
-   * Implementations should start a thread in the override of this method.
-   *
-   */
-  virtual void start() { logger_->log(HaSLI::SeverityLevel::INFO, "Started!"); }
-
-  /**
-   * @brief Blocking stop method. Blocks until the thread is finished working.
-   *
-   * Implementations must use Decorator pattern for this method.
-   * Implementations should call a join on the thread in the override of this
-   * method.
-   *
-   */
-  virtual void stop() {
-    logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
-  }
-
-private:
-  const std::string adapter_name_;
-
-protected:
   HaSLI::LoggerPtr logger_;
 
 private:
