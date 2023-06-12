@@ -10,7 +10,7 @@ class PackageConan(ConanFile):
     requires = [
         'gtest/[~1.11]',
         'HaSLL/[~0.3]@hahn-schickard/stable',
-        'Information_Model/[~0.2]@hahn-schickard/stable',
+        'Information_Model/[~0.3]@hahn-schickard/stable',
         'Event_Model/[~0.3]@hahn-schickard/stable'
     ]
     settings = "os", "compiler", "build_type", "arch"
