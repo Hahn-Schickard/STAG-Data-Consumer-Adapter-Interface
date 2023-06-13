@@ -19,7 +19,7 @@
  * @author Dovydas Girdvainis
  * @date 04.12.2019
  */
-namespace DCAI {
+namespace Data_Consumer_Adapter {
 
 using ModelRegistryEvent =
     std::variant<std::string, Information_Model::NonemptyDevicePtr>;
@@ -161,6 +161,6 @@ private:
 using DCAI = DataConsumerAdapterInterface;
 using DataConsumerAdapterInterfacePtr = std::shared_ptr<DCAI>;
 using DCAI_Ptr = DataConsumerAdapterInterfacePtr;
-} // namespace DCAI
+} // namespace Data_Consumer_Adapter
 
 #endif //__DATA_CONSUMER_ADAPTER_INTERFACE_HPP_

@@ -7,9 +7,8 @@
 #include <memory>
 
 using namespace std;
-using namespace DCAI;
-using namespace DCAI::testing;
-using namespace Information_Model;
+using namespace Data_Consumer_Adapter;
+using namespace Data_Consumer_Adapter::testing;
 using namespace Information_Model::testing;
 
 namespace Information_Model {
