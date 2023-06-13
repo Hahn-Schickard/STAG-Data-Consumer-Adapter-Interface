@@ -5,7 +5,7 @@
 
 #include <gmock/gmock.h>
 
-namespace DCAI {
+namespace Data_Consumer_Adapter {
 namespace testing {
 struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
   DataConsumerAdapterInterfaceMock(
@@ -25,6 +25,6 @@ struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
   HaSLI::LoggerPtr getLogger() { return this->logger_; }
 };
 } // namespace testing
-} // namespace DCAI
+} // namespace Data_Consumer_Adapter
 
 #endif //__DATA_CONSUMER_ADAPTER_INTERFACE_MOCK_HPP_

@@ -10,7 +10,7 @@
 #include <set>
 
 using namespace std;
-using namespace DCAI;
+using namespace Data_Consumer_Adapter;
 using namespace HaSLL;
 using namespace Information_Model;
 
@@ -32,8 +32,7 @@ struct DCAI_Example : DataConsumerAdapterInterface {
 private:
   void handleEvent(ModelRegistryEventPtr event) override {
     this->logger_->log(SeverityLevel::TRACE, "Received an event!");
-    match(
-        *event,
+    match(*event,
         [&](const string& identifier) {
           auto it = devices_.find(identifier);
           if (it != devices_.end()) {
