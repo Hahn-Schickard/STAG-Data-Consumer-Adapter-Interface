@@ -38,18 +38,30 @@ public:
   }
 };
 
+using EventSourceFakePtr = shared_ptr<EventSourceFake>;
+
+struct DCAI_TestFixture : public ::testing::Test {
+protected:
+  void SetUp() override {
+    event_source = make_shared<EventSourceFake>();
+    adapter_mock = make_shared<::testing::NiceMock<DCAI_Mock>>(
+        event_source, "Mock adapter");
+    adapter = adapter_mock;
+  }
+
+  EventSourceFakePtr event_source; // NOLINT(readability-identifier-naming)
+  DCAI_MockPtr adapter_mock; // NOLINT(readability-identifier-naming)
+  DCAI_Ptr adapter; // NOLINT(readability-identifier-naming)
+};
+
 NonemptyDevicePtr makeDevice(const string& id) {
   return NonemptyDevicePtr(
       std::make_shared<MockDevice>(id, "Mock", "Mock device"));
 }
 
-TEST(DCAI_Test, canRegisterDevice) { // NOLINT
-  auto event_source = make_shared<EventSourceFake>();
-  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
-      event_source, "adopt me!");
-
+TEST_F(DCAI_TestFixture, canRegisterDevice) { // NOLINT
   auto device = makeDevice("12345");
-  EXPECT_CALL(*adapter, registrate(device)).Times(1);
+  EXPECT_CALL(*adapter_mock, registrate(device)).Times(1);
 
   auto event = std::make_shared<ModelRegistryEvent>(device);
   event_source->sendEvent(event);
@@ -57,11 +69,7 @@ TEST(DCAI_Test, canRegisterDevice) { // NOLINT
 
 constexpr size_t INITIAL_MODEL_SIZE = 5;
 
-TEST(DCAI_Test, canInitialiseModel) { // NOLINT
-  auto event_source = make_shared<EventSourceFake>();
-  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
-      event_source, "adopt me!");
-
+TEST_F(DCAI_TestFixture, canInitialiseModel) { // NOLINT
   vector<NonemptyDevicePtr> devices;
   devices.reserve(INITIAL_MODEL_SIZE);
   for (size_t i = 0; i < INITIAL_MODEL_SIZE; ++i) {
@@ -72,40 +80,28 @@ TEST(DCAI_Test, canInitialiseModel) { // NOLINT
   EXPECT_EQ(INITIAL_MODEL_SIZE, devices.size());
 
   for (const auto& device : devices) {
-    EXPECT_CALL(*adapter, registrate(device)).Times(1);
+    EXPECT_CALL(*adapter_mock, registrate(device)).Times(1);
 
     auto event = std::make_shared<ModelRegistryEvent>(device);
     event_source->sendEvent(event);
   }
 }
 
-TEST(DCAI_Test, canDeregisterDevice) { // NOLINT
-  auto event_source = make_shared<EventSourceFake>();
-  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
-      event_source, "adopt me!");
-
+TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINTs
   auto device_id = "12345";
-  EXPECT_CALL(*adapter, deregistrate(device_id)).Times(1);
+  EXPECT_CALL(*adapter_mock, deregistrate(device_id)).Times(1);
 
   auto event = std::make_shared<ModelRegistryEvent>(device_id);
   event_source->sendEvent(event);
 }
 
-TEST(DCAI_Test, canStart) { // NOLINT
-  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
-  EXPECT_CALL(adapter, start()); // NOLINT
-
-  EXPECT_NO_THROW(adapter.start());
+TEST_F(DCAI_TestFixture, canStart) { // NOLINT
+  EXPECT_CALL(*adapter_mock, start());
+  EXPECT_NO_THROW(adapter->start());
 }
 
-TEST(DCAI_Test, canGetLogger) { // NOLINT
-  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
-  EXPECT_NE(adapter.getLogger(), nullptr);
-}
+TEST_F(DCAI_TestFixture, canStop) { // NOLINT
+  EXPECT_CALL(*adapter_mock, stop());
 
-TEST(DCAI_Test, canStop) { // NOLINT
-  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
-  EXPECT_CALL(adapter, stop());
-
-  EXPECT_NO_THROW(adapter.stop());
+  EXPECT_NO_THROW(adapter->stop());
 }

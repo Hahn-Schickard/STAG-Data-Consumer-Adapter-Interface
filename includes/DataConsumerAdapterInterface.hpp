@@ -35,17 +35,14 @@ struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
 
   DataConsumerAdapterInterface(
-      ModelEventSourcePtr event_source, const std::string& name)
-      : EventListenerInterface(event_source), adapter_name_(name),
-        logger_(HaSLI::LoggerManager::registerLogger(adapter_name_)) {
+      ModelEventSourcePtr event_source, const std::string& adapter_name)
+      : EventListenerInterface(event_source), name(adapter_name),
+        logger_(HaSLI::LoggerManager::registerLogger(name)) {
     logger_->log(HaSLI::SeverityLevel::TRACE,
-        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
-        adapter_name_);
+        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
   }
 
   virtual ~DataConsumerAdapterInterface() = default;
-
-  const std::string getAdapterName() const { return adapter_name_; }
 
   /**
    * @brief Forwards an existing device abstraction model to Data Consumer
@@ -87,8 +84,7 @@ struct DataConsumerAdapterInterface
     logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
   }
 
-private:
-  const std::string adapter_name_;
+  const std::string name; // NOLINT(readability-identifier-naming)
 
 protected:
   /**
@@ -106,7 +102,7 @@ protected:
    * @param device new/changed device instance
    */
   virtual void registrate(Information_Model::NonemptyDevicePtr /* device */) {
-    std::string error_msg = "Called based implementation of " + adapter_name_ +
+    std::string error_msg = "Called based implementation of " + name +
         " DataConsumerAdapterInterface::registrate()";
     throw std::runtime_error(error_msg);
   }
@@ -122,7 +118,7 @@ protected:
    * @param device_id
    */
   virtual void deregistrate(const std::string& /* device_id */) {
-    std::string error_msg = "Called based implementation of " + adapter_name_ +
+    std::string error_msg = "Called based implementation of " + name +
         " DataConsumerAdapterInterface::deregistrate()";
     throw std::runtime_error(error_msg);
   }
@@ -142,7 +138,7 @@ private:
             logger_->error(
                 "{} Data Consumer Adapter encountered an unhandled exception "
                 "while deregistrating device {}. Exception: {}",
-                adapter_name_, device_id, ex.what());
+                name, device_id, ex.what());
           }
         });
   }
@@ -155,15 +151,15 @@ private:
       logger_->error(
           "{} Data Consumer Adapter encountered an unhandled exception "
           "while registrating device {}. Exception: {}",
-          adapter_name_, device->getElementId(), ex.what());
+          name, device->getElementId(), ex.what());
     }
   }
 
   std::mutex event_mx_;
 };
 
-using DataConsumerAdapterInterfacePtr =
-    std::shared_ptr<DataConsumerAdapterInterface>;
+using DCAI = DataConsumerAdapterInterface;
+using DataConsumerAdapterInterfacePtr = std::shared_ptr<DCAI>;
 using DCAI_Ptr = DataConsumerAdapterInterfacePtr;
 } // namespace DCAI
 
