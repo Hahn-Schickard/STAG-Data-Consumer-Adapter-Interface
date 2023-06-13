@@ -7,8 +7,8 @@
 
 namespace DCAI {
 namespace testing {
-struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
-  DataConsumerAdapterInterfaceMock(
+struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
+  DataConsumerAdapterMock(
       ModelEventSourcePtr event_source, const std::string& name)
       : DataConsumerAdapterInterface(event_source, name) {
     ON_CALL(*this, start).WillByDefault([this]() {
