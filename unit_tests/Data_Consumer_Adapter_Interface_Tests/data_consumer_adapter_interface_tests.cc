@@ -45,9 +45,8 @@ NonemptyDevicePtr makeDevice(const string& id) {
 
 TEST(DCAI_Test, canRegisterDevice) { // NOLINT
   auto event_source = make_shared<EventSourceFake>();
-  auto adapter =
-      make_shared<::testing::NiceMock<DataConsumerAdapterInterfaceMock>>(
-          event_source, "adopt me!");
+  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
+      event_source, "adopt me!");
 
   auto device = makeDevice("12345");
   EXPECT_CALL(*adapter, registrate(device)).Times(1);
@@ -60,9 +59,8 @@ constexpr size_t INITIAL_MODEL_SIZE = 5;
 
 TEST(DCAI_Test, canInitialiseModel) { // NOLINT
   auto event_source = make_shared<EventSourceFake>();
-  auto adapter =
-      make_shared<::testing::NiceMock<DataConsumerAdapterInterfaceMock>>(
-          event_source, "adopt me!");
+  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
+      event_source, "adopt me!");
 
   vector<NonemptyDevicePtr> devices;
   devices.reserve(INITIAL_MODEL_SIZE);
@@ -83,9 +81,8 @@ TEST(DCAI_Test, canInitialiseModel) { // NOLINT
 
 TEST(DCAI_Test, canDeregisterDevice) { // NOLINT
   auto event_source = make_shared<EventSourceFake>();
-  auto adapter =
-      make_shared<::testing::NiceMock<DataConsumerAdapterInterfaceMock>>(
-          event_source, "adopt me!");
+  auto adapter = make_shared<::testing::NiceMock<DataConsumerAdapterMock>>(
+      event_source, "adopt me!");
 
   auto device_id = "12345";
   EXPECT_CALL(*adapter, deregistrate(device_id)).Times(1);
@@ -95,22 +92,19 @@ TEST(DCAI_Test, canDeregisterDevice) { // NOLINT
 }
 
 TEST(DCAI_Test, canStart) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
+  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
   EXPECT_CALL(adapter, start()); // NOLINT
 
   EXPECT_NO_THROW(adapter.start());
 }
 
 TEST(DCAI_Test, canGetLogger) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
+  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
   EXPECT_NE(adapter.getLogger(), nullptr);
 }
 
 TEST(DCAI_Test, canStop) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
+  DataConsumerAdapterMock adapter(make_shared<EventSourceFake>(), "start me!");
   EXPECT_CALL(adapter, stop());
 
   EXPECT_NO_THROW(adapter.stop());
