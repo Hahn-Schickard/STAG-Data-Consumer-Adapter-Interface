@@ -21,8 +21,6 @@ struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
   MOCK_METHOD(void, handleEvent, (ModelRegistryEventPtr), (override));
   MOCK_METHOD(void, start, (), (override));
   MOCK_METHOD(void, stop, (), (override));
-
-  HaSLI::LoggerPtr getLogger() { return this->logger_; }
 };
 
 using DCAI_Mock = DataConsumerAdapterMock;
