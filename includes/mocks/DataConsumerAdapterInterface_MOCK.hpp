@@ -7,8 +7,8 @@
 
 namespace DCAI {
 namespace testing {
-struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
-  DataConsumerAdapterInterfaceMock(
+struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
+  DataConsumerAdapterMock(
       ModelEventSourcePtr event_source, const std::string& name)
       : DataConsumerAdapterInterface(event_source, name) {
     ON_CALL(*this, start).WillByDefault([this]() {
@@ -21,9 +21,11 @@ struct DataConsumerAdapterInterfaceMock : DataConsumerAdapterInterface {
   MOCK_METHOD(void, handleEvent, (ModelRegistryEventPtr), (override));
   MOCK_METHOD(void, start, (), (override));
   MOCK_METHOD(void, stop, (), (override));
-
-  HaSLI::LoggerPtr getLogger() { return this->logger_; }
 };
+
+using DCAI_Mock = DataConsumerAdapterMock;
+using DataConsumerAdapterMockPtr = std::shared_ptr<DCAI_Mock>;
+using DCAI_MockPtr = DataConsumerAdapterMockPtr;
 } // namespace testing
 } // namespace DCAI
 

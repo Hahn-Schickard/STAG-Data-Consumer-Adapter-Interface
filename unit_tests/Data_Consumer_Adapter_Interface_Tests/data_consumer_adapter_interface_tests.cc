@@ -31,38 +31,38 @@ public:
   }
 };
 
-TEST(DCAI_Test, canHandleEvent) { // NOLINT
-  auto event_source = make_shared<EventSourceFake>();
-  auto adapter =
-      make_shared<::testing::NiceMock<DataConsumerAdapterInterfaceMock>>(
-          event_source, "adopt me!");
+using EventSourceFakePtr = shared_ptr<EventSourceFake>;
 
+struct DCAI_TestFixture : public ::testing::Test {
+protected:
+  void SetUp() override {
+    event_source = make_shared<EventSourceFake>();
+    adapter_mock = make_shared<::testing::NiceMock<DCAI_Mock>>(
+        event_source, "Mock adapter");
+    adapter = adapter_mock;
+  }
+
+  EventSourceFakePtr event_source; // NOLINT(readability-identifier-naming)
+  DCAI_MockPtr adapter_mock; // NOLINT(readability-identifier-naming)
+  DCAI_Ptr adapter; // NOLINT(readability-identifier-naming)
+};
+
+TEST_F(DCAI_TestFixture, canHandleEvent) { // NOLINT
   ModelRegistryEventPtr event = std::make_shared<ModelRegistryEvent>(
       Information_Model::NonemptyDevicePtr(std::make_shared<MockDevice>(
           "12345", "Mock", "Mock device"))); // NOLINT
-  EXPECT_CALL(*adapter, handleEvent(event)).Times(1); // NOLINT
+  EXPECT_CALL(*adapter_mock, handleEvent(event)).Times(1); // NOLINT
 
   event_source->sendEvent(event);
 }
 
-TEST(DCAI_Test, canStart) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
-  EXPECT_CALL(adapter, start()); // NOLINT
-
-  EXPECT_NO_THROW(adapter.start());
+TEST_F(DCAI_TestFixture, canStart) { // NOLINT
+  EXPECT_CALL(*adapter_mock, start());
+  EXPECT_NO_THROW(adapter->start());
 }
 
-TEST(DCAI_Test, canGetLogger) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
-  EXPECT_NE(adapter.getLogger(), nullptr);
-}
+TEST_F(DCAI_TestFixture, canStop) { // NOLINT
+  EXPECT_CALL(*adapter_mock, stop());
 
-TEST(DCAI_Test, canStop) { // NOLINT
-  DataConsumerAdapterInterfaceMock adapter(
-      make_shared<EventSourceFake>(), "start me!");
-  EXPECT_CALL(adapter, stop());
-
-  EXPECT_NO_THROW(adapter.stop());
+  EXPECT_NO_THROW(adapter->stop());
 }

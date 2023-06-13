@@ -67,8 +67,8 @@ protected:
   HaSLI::LoggerPtr logger_;
 };
 
-using DataConsumerAdapterInterfacePtr =
-    std::shared_ptr<DataConsumerAdapterInterface>;
+using DCAI = DataConsumerAdapterInterface;
+using DataConsumerAdapterInterfacePtr = std::shared_ptr<DCAI>;
 using DCAI_Ptr = DataConsumerAdapterInterfacePtr;
 } // namespace DCAI
 
