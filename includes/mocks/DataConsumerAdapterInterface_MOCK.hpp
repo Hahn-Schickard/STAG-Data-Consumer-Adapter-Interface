@@ -24,6 +24,10 @@ struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
 
   HaSLI::LoggerPtr getLogger() { return this->logger_; }
 };
+
+using DCAI_Mock = DataConsumerAdapterMock;
+using DataConsumerAdapterMockPtr = std::shared_ptr<DCAI_Mock>;
+using DCAI_MockPtr = DataConsumerAdapterMockPtr;
 } // namespace testing
 } // namespace DCAI
 
