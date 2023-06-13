@@ -5,7 +5,7 @@
 
 #include <gmock/gmock.h>
 
-namespace DCAI {
+namespace Data_Consumer_Adapter {
 namespace testing {
 struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
   DataConsumerAdapterMock(
@@ -27,6 +27,6 @@ using DCAI_Mock = DataConsumerAdapterMock;
 using DataConsumerAdapterMockPtr = std::shared_ptr<DCAI_Mock>;
 using DCAI_MockPtr = DataConsumerAdapterMockPtr;
 } // namespace testing
-} // namespace DCAI
+} // namespace Data_Consumer_Adapter
 
 #endif //__DATA_CONSUMER_ADAPTER_INTERFACE_MOCK_HPP_
