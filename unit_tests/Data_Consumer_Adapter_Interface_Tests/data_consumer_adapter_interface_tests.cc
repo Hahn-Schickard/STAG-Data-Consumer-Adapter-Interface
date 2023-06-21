@@ -1,6 +1,6 @@
 #include "DataConsumerAdapterInterface_MOCK.hpp"
 #include "Event_Model/EventSource.hpp"
-#include "Information_Model/mocks/Device_MOCK.hpp"
+#include "Information_Model/mocks/DeviceMockBuilder.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -55,8 +55,11 @@ protected:
 };
 
 NonemptyDevicePtr makeDevice(const string& id) {
-  return NonemptyDevicePtr(
-      std::make_shared<MockDevice>(id, "Mock", "Mock device"));
+  auto builder = DeviceMockBuilder();
+  builder.buildDeviceBase(id, "Mock", "Mock device");
+  builder.addReadableMetric(
+      "readable", "readable metric mock", DataType::BOOLEAN);
+  return NonemptyDevicePtr(move(builder.getResult()));
 }
 
 TEST_F(DCAI_TestFixture, canRegisterDevice) { // NOLINT
