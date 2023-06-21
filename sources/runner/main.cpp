@@ -14,6 +14,7 @@ using namespace Data_Consumer_Adapter;
 using namespace HaSLL;
 using namespace Information_Model;
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
       /* Never move into Model Event Source ptr either! */
@@ -22,12 +23,6 @@ struct DCAI_Example : DataConsumerAdapterInterface {
   void start(std::vector<Information_Model::DevicePtr> devices = {}) final {
     this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
     DataConsumerAdapterInterface::start(devices);
-  }
-
-  void stop() final {
-    this->logger_->log(
-        SeverityLevel::TRACE, "{} Received a stop command!", name);
-    DataConsumerAdapterInterface::stop();
   }
 
 private:
