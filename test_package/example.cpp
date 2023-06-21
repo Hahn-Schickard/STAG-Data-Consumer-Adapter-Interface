@@ -18,9 +18,9 @@ struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
       : DataConsumerAdapterInterface(source, "Example DCAI") {}
 
-  void start() final {
+  void start(std::vector<Information_Model::DevicePtr> devices = {}) final {
     this->logger_->log(SeverityLevel::TRACE, "{} Started!", getAdapterName());
-    DataConsumerAdapterInterface::start();
+    DataConsumerAdapterInterface::start(devices);
   }
 
   void stop() final {
