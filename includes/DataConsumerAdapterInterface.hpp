@@ -48,7 +48,7 @@ struct DataConsumerAdapterInterface
    * implementation operations
    *
    * @attention
-   * Implementations MUST use Decorator pattern for this method, if custom
+   * Implementations MUST call this method in their overrides, if custom
    * start/stop functionality is required
    *
    * @note
@@ -63,7 +63,7 @@ struct DataConsumerAdapterInterface
    * finished
    *
    * @attention
-   * Implementations MUST use Decorator pattern for this method, if custom
+   * Implementations MUST call this method in their overrides, if custom
    * start/stop functionality is required
    *
    * @note
