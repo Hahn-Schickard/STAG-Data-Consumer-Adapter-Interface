@@ -14,46 +14,39 @@ using namespace Data_Consumer_Adapter;
 using namespace HaSLL;
 using namespace Information_Model;
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
-      : DataConsumerAdapterInterface(source, "Example DCAI") {}
+      /* Never move into Model Event Source ptr either! */
+      : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
   void start(std::vector<Information_Model::DevicePtr> devices = {}) final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", getAdapterName());
+    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
     DataConsumerAdapterInterface::start(devices);
   }
 
-  void stop() final {
-    this->logger_->log(
-        SeverityLevel::TRACE, "{} Received a stop command!", getAdapterName());
-    DataConsumerAdapterInterface::stop();
+private:
+  void registrate(Information_Model::NonemptyDevicePtr device) override {
+    auto emplaced = devices_.emplace(device->getElementId());
+    if (emplaced.second) {
+      this->logger_->log(SeverityLevel::TRACE, "Device: {} was registered!",
+          device->getElementName());
+    } else {
+      this->logger_->log(SeverityLevel::TRACE,
+          "Device: {} was already registered. Ignoring new instance!",
+          device->getElementName());
+    }
   }
 
-private:
-  void handleEvent(ModelRegistryEventPtr event) override {
-    this->logger_->log(SeverityLevel::TRACE, "Received an event!");
-    match(*event,
-        [&](const string& identifier) {
-          auto it = devices_.find(identifier);
-          if (it != devices_.end()) {
-            this->logger_->log(SeverityLevel::TRACE,
-                "Device: {} was deregistered!", identifier);
-          } else {
-            string error_msg = "Device " + identifier + " does not exist!";
-            throw runtime_error(error_msg);
-          }
-        },
-        [&](NonemptyDevicePtr device) {
-          auto emplaced = devices_.emplace(device->getElementId());
-          if (emplaced.second) {
-            this->logger_->log(SeverityLevel::TRACE,
-                "Device: {} was registered!", device->getElementName());
-          } else {
-            this->logger_->log(SeverityLevel::TRACE,
-                "Device: {} was already registered. Ignoring new instance!",
-                device->getElementName());
-          }
-        });
+  void deregistrate(const std::string& device_id) override {
+    auto it = devices_.find(device_id);
+    if (it != devices_.end()) {
+      this->logger_->log(
+          SeverityLevel::TRACE, "Device: {} was deregistered!", device_id);
+    } else {
+      string error_msg = "Device " + device_id + " does not exist!";
+      throw runtime_error(error_msg);
+    }
   }
 
   set<string> devices_;
@@ -70,7 +63,7 @@ void printException(const exception& e, int level = 0) {
 }
 
 class EventSourceFake
-    : public Event_Model::AsyncEventSource<ModelRegistryEvent> {
+    : public Event_Model::AsyncEventSource<ModelRepositoryEvent> {
 
   LoggerPtr logger_;
 
@@ -93,7 +86,7 @@ public:
         logger_(LoggerManager::registerTypedLogger(this)) {}
 
   void registerDevice(NonemptyDevicePtr device) {
-    auto event = std::make_shared<ModelRegistryEvent>(device);
+    auto event = std::make_shared<ModelRepositoryEvent>(device);
     logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is available for registration.",
         device->getElementId());
@@ -101,7 +94,7 @@ public:
   }
 
   void deregisterDevice(string identifier) {
-    auto event = make_shared<ModelRegistryEvent>(identifier);
+    auto event = make_shared<ModelRepositoryEvent>(identifier);
     logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is no longer available", identifier);
     notify(move(event));
@@ -129,7 +122,7 @@ int main() {
       NonemptyDevicePtr result(builder->getResult());
       event_source->registerDevice(result);
       event_source->registerDevice(
-          result); // check if double registration is handeled
+          result); // check if double registration is handled
       delete builder;
     }
 
@@ -141,10 +134,8 @@ int main() {
     dcai.stop();
 
     return EXIT_SUCCESS;
-    cout << "Integration Test Passed" << endl;
   } catch (const exception& ex) {
     printException(ex);
-    cout << "Integration Test Failed" << endl;
     return EXIT_FAILURE;
   }
 }
