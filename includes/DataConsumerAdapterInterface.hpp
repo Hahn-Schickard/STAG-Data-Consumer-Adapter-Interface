@@ -60,6 +60,7 @@ struct DataConsumerAdapterInterface
    * @param devices pre-existing list of device abstractions
    */
   void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
+    auto registrate_lock = std::lock_guard(event_mx_);
     for (auto device : devices) {
       registerDevice(Information_Model::NonemptyDevicePtr(device));
     }
@@ -143,6 +144,7 @@ private:
   void handleEvent(ModelRegistryEventPtr event) override {
     match(*event,
         [this](Information_Model::NonemptyDevicePtr device) {
+          auto registrate_lock = std::lock_guard(event_mx_);
           registerDevice(device);
         },
         [this](const std::string& device_id) {
@@ -159,7 +161,6 @@ private:
 
   void registerDevice(Information_Model::NonemptyDevicePtr device) {
     try {
-      auto registrate_lock = std::lock_guard(event_mx_);
       registrate(device);
     } catch (const std::exception& ex) {
       logger_->error(
