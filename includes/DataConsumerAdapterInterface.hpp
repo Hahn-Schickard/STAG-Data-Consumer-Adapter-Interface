@@ -23,8 +23,12 @@ using ModelEventSourcePtr =
     std::shared_ptr<Event_Model::EventSourceInterface<ModelRegistryEvent>>;
 
 /**
- * @brief Generic Interface for all Data Consumer Adapter Implementations
+ * @brief DataConsumerAdapterInterface is an abstraction for various user
+ * applications that need to interact with the Information Model
  *
+ * This interface provides the latest available Information Model Repository
+ * snapshot, access to Information Model Registry events as well as a common
+ * logging mechanism
  */
 struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
@@ -40,26 +44,34 @@ struct DataConsumerAdapterInterface
   virtual ~DataConsumerAdapterInterface() = default;
 
   /**
-   * @brief Non-blocking start method, throws std::runtime_error if building and
-   * registration interface was not set before this method was called
+   * @brief Non-blocking start method, starts Data Consumer Adapter
+   * implementation operations
    *
-   * Implementations must use Decorator pattern for this method.
-   * Implementations should start a thread in the override of this method.
+   * @attention
+   * Implementations MUST call this method in their overrides, if custom
+   * start/stop functionality is required
    *
+   * @note
+   * Implementations MUST guarantee that the calling thread WILL NOT be
+   * blocked from executing other operations after the call to this method.
    */
-  virtual void start() { logger_->log(HaSLI::SeverityLevel::INFO, "Started!"); }
+  virtual void start() { logger_->info("{} started", name); }
 
   /**
-   * @brief Blocking stop method. Blocks until the thread is finished working.
+   * @brief Blocking stop method, stops Technology Adapter implementation
+   * communication operations. Blocks until communication operations are
+   * finished
    *
-   * Implementations must use Decorator pattern for this method.
-   * Implementations should call a join on the thread in the override of this
-   * method.
+   * @attention
+   * Implementations MUST call this method in their overrides, if custom
+   * start/stop functionality is required
    *
+   * @note
+   * In the override of this method, implementations SHOULD join any threads
+   * started in @see start() or wait for the result of any async tasks started
+   * there
    */
-  virtual void stop() {
-    logger_->log(HaSLI::SeverityLevel::INFO, "Received a stop command!");
-  }
+  virtual void stop() { logger_->info("{} stopped", name); }
 
   const std::string name; // NOLINT(readability-identifier-naming)
 

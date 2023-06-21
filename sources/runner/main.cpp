@@ -14,20 +14,15 @@ using namespace Data_Consumer_Adapter;
 using namespace HaSLL;
 using namespace Information_Model;
 
+// NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
   DCAI_Example(ModelEventSourcePtr source)
       /* Never move into Model Event Source ptr either! */
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
   void start() final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
+    logger_->trace("This is how you decorate the start call");
     DataConsumerAdapterInterface::start();
-  }
-
-  void stop() final {
-    this->logger_->log(
-        SeverityLevel::TRACE, "{} Received a stop command!", name);
-    DataConsumerAdapterInterface::stop();
   }
 
 private:
