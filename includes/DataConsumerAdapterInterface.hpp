@@ -21,11 +21,11 @@
  */
 namespace Data_Consumer_Adapter {
 
-using ModelRegistryEvent =
+using ModelRepositoryEvent =
     std::variant<std::string, Information_Model::NonemptyDevicePtr>;
-using ModelRegistryEventPtr = std::shared_ptr<ModelRegistryEvent>;
+using ModelRepositoryEventPtr = std::shared_ptr<ModelRepositoryEvent>;
 using ModelEventSourcePtr =
-    std::shared_ptr<Event_Model::EventSourceInterface<ModelRegistryEvent>>;
+    std::shared_ptr<Event_Model::EventSourceInterface<ModelRepositoryEvent>>;
 
 /**
  * @brief DataConsumerAdapterInterface is an abstraction for various user
@@ -36,7 +36,7 @@ using ModelEventSourcePtr =
  * logging mechanism
  */
 struct DataConsumerAdapterInterface
-    : public Event_Model::EventListenerInterface<ModelRegistryEvent> {
+    : public Event_Model::EventListenerInterface<ModelRepositoryEvent> {
 
   DataConsumerAdapterInterface(
       ModelEventSourcePtr event_source, const std::string& adapter_name)
@@ -141,7 +141,7 @@ protected:
   HaSLI::LoggerPtr logger_;
 
 private:
-  void handleEvent(ModelRegistryEventPtr event) override {
+  void handleEvent(ModelRepositoryEventPtr event) override {
     match(*event,
         [this](Information_Model::NonemptyDevicePtr device) {
           auto registrate_lock = std::lock_guard(event_mx_);

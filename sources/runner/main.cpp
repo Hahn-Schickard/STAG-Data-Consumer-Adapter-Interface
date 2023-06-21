@@ -66,7 +66,7 @@ void printException(const exception& e, int level = 0) {
 }
 
 class EventSourceFake
-    : public Event_Model::AsyncEventSource<ModelRegistryEvent> {
+    : public Event_Model::AsyncEventSource<ModelRepositoryEvent> {
 
   LoggerPtr logger_;
 
@@ -89,7 +89,7 @@ public:
         logger_(LoggerManager::registerTypedLogger(this)) {}
 
   void registerDevice(NonemptyDevicePtr device) {
-    auto event = std::make_shared<ModelRegistryEvent>(device);
+    auto event = std::make_shared<ModelRepositoryEvent>(device);
     logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is available for registration.",
         device->getElementId());
@@ -97,7 +97,7 @@ public:
   }
 
   void deregisterDevice(string identifier) {
-    auto event = make_shared<ModelRegistryEvent>(identifier);
+    auto event = make_shared<ModelRepositoryEvent>(identifier);
     logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is no longer available", identifier);
     notify(move(event));

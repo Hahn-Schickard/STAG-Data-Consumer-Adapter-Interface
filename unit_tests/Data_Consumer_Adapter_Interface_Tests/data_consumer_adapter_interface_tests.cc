@@ -18,7 +18,7 @@ bool operator==(const NonemptyDevicePtr& lhs, const NonemptyDevicePtr& rhs) {
 }
 } // namespace Information_Model
 
-class EventSourceFake : public Event_Model::EventSource<ModelRegistryEvent> {
+class EventSourceFake : public Event_Model::EventSource<ModelRepositoryEvent> {
   /* This is the expected handle exception footprint, don't change it without
    * changing the definition */
   void handleException(exception_ptr eptr) { // NOLINT
@@ -33,7 +33,7 @@ public:
             bind(&EventSourceFake::handleException, this, placeholders::_1)) {}
 
   /* NEVER move event values! clang linter is lying here! */
-  void sendEvent(ModelRegistryEventPtr event) {
+  void sendEvent(ModelRepositoryEventPtr event) {
     notify(event); // NOLINT
   }
 };
@@ -66,7 +66,7 @@ TEST_F(DCAI_TestFixture, canRegisterDevice) { // NOLINT
   auto device = makeDevice("12345");
   EXPECT_CALL(*adapter_mock, registrate(device)).Times(1);
 
-  auto event = std::make_shared<ModelRegistryEvent>(device);
+  auto event = std::make_shared<ModelRepositoryEvent>(device);
   event_source->sendEvent(event);
 }
 
@@ -86,7 +86,7 @@ TEST_F(DCAI_TestFixture, canInitialiseModel) { // NOLINT
     auto nonempty_device = NonemptyDevicePtr(device);
     EXPECT_CALL(*adapter_mock, registrate(nonempty_device)).Times(1);
 
-    auto event = std::make_shared<ModelRegistryEvent>(nonempty_device);
+    auto event = std::make_shared<ModelRepositoryEvent>(nonempty_device);
     event_source->sendEvent(event);
   }
 }
@@ -95,7 +95,7 @@ TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINTs
   auto device_id = "12345";
   EXPECT_CALL(*adapter_mock, deregistrate(device_id)).Times(1);
 
-  auto event = std::make_shared<ModelRegistryEvent>(device_id);
+  auto event = std::make_shared<ModelRepositoryEvent>(device_id);
   event_source->sendEvent(event);
 }
 
