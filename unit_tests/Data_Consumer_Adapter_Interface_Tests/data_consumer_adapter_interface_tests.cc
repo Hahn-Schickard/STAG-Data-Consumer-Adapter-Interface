@@ -9,6 +9,7 @@
 using namespace std;
 using namespace Data_Consumer_Adapter;
 using namespace Data_Consumer_Adapter::testing;
+using namespace Information_Model;
 using namespace Information_Model::testing;
 
 namespace Information_Model {
@@ -69,19 +70,20 @@ TEST_F(DCAI_TestFixture, canRegisterDevice) { // NOLINT
 constexpr size_t INITIAL_MODEL_SIZE = 5;
 
 TEST_F(DCAI_TestFixture, canInitialiseModel) { // NOLINT
-  vector<NonemptyDevicePtr> devices;
+  vector<DevicePtr> devices;
   devices.reserve(INITIAL_MODEL_SIZE);
   for (size_t i = 0; i < INITIAL_MODEL_SIZE; ++i) {
-    devices.emplace_back(makeDevice(to_string(i)));
+    devices.emplace_back(makeDevice(to_string(i)).base());
   }
 
   EXPECT_FALSE(devices.empty());
   EXPECT_EQ(INITIAL_MODEL_SIZE, devices.size());
 
   for (const auto& device : devices) {
-    EXPECT_CALL(*adapter_mock, registrate(device)).Times(1);
+    auto nonempty_device = NonemptyDevicePtr(device);
+    EXPECT_CALL(*adapter_mock, registrate(nonempty_device)).Times(1);
 
-    auto event = std::make_shared<ModelRegistryEvent>(device);
+    auto event = std::make_shared<ModelRegistryEvent>(nonempty_device);
     event_source->sendEvent(event);
   }
 }
@@ -95,7 +97,7 @@ TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINTs
 }
 
 TEST_F(DCAI_TestFixture, canStart) { // NOLINT
-  EXPECT_CALL(*adapter_mock, start());
+  EXPECT_CALL(*adapter_mock, start(::testing::_));
   EXPECT_NO_THROW(adapter->start());
 }
 

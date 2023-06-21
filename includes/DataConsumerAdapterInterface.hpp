@@ -55,10 +55,9 @@ struct DataConsumerAdapterInterface
    *
    * @param devices pre-existing list of device abstractions
    */
-  void initialiseModel(
-      std::vector<Information_Model::NonemptyDevicePtr> devices) {
+  void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
     for (auto device : devices) {
-      registerDevice(device);
+      registerDevice(Information_Model::NonemptyDevicePtr(device));
     }
   }
 
@@ -70,7 +69,10 @@ struct DataConsumerAdapterInterface
    * Implementations should start a thread in the override of this method.
    *
    */
-  virtual void start() { logger_->log(HaSLI::SeverityLevel::INFO, "Started!"); }
+  virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
+    logger_->log(HaSLI::SeverityLevel::INFO, "Started!");
+    initialiseModel(devices);
+  }
 
   /**
    * @brief Blocking stop method. Blocks until the thread is finished working.
