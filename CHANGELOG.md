@@ -1,4 +1,22 @@
 # Changelog
+## [0.2.0] - 2023.06.28
+### Added
+ - `DataConsumerAdapterInterface::registrate()` 
+ - `DataConsumerAdapterInterface::deregistrate()`
+ - `DataConsumerAdapterInterface::initialiseModel()`
+ - `DataConsumerAdapterInterface::registerDevice()`
+
+### Changed
+ - Information_Model dependency to fuzzy v0.3
+ - `DataConsumerAdapterInterface::start()` to accept `std::vector<Information_Model::DevicePtr>` parameter
+ - `DataConsumerAdapterInterface::name` to be const public
+ - `DataConsumerAdapterInterface::logger` to be const public
+ - `DataConsumerAdapterInterface::handleEvent()` to be private
+ - `ModelRegistryEvent` into `ModelRepositoryEvent` 
+
+### Removed
+ - `DataConsumerAdapterInterface::getAdapterName()` 
+
 ## [0.1.10] - 2022.11.21
 ### Changed
  - conan packaging recipe
