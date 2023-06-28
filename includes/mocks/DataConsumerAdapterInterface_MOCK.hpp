@@ -25,7 +25,7 @@ struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
       void, registrate, (Information_Model::NonemptyDevicePtr), (override));
   MOCK_METHOD(void, deregistrate, (const std::string&), (override));
   MOCK_METHOD(void, start,
-      (std::vector<Information_Model::DevicePtr> /* devices */ = {}), (override));
+      (std::vector<Information_Model::DevicePtr> /* devices */), (override));
   MOCK_METHOD(void, stop, (), (override));
 };
 
