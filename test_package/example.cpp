@@ -21,7 +21,7 @@ struct DCAI_Example : DataConsumerAdapterInterface {
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
   void start(std::vector<Information_Model::DevicePtr> devices = {}) final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
+    logger->log(SeverityLevel::TRACE, "{} Started!", name);
     DataConsumerAdapterInterface::start(devices);
   }
 
@@ -29,10 +29,10 @@ private:
   void registrate(Information_Model::NonemptyDevicePtr device) override {
     auto emplaced = devices_.emplace(device->getElementId());
     if (emplaced.second) {
-      this->logger_->log(SeverityLevel::TRACE, "Device: {} was registered!",
+      logger->log(SeverityLevel::TRACE, "Device: {} was registered!",
           device->getElementName());
     } else {
-      this->logger_->log(SeverityLevel::TRACE,
+      logger->log(SeverityLevel::TRACE,
           "Device: {} was already registered. Ignoring new instance!",
           device->getElementName());
     }
@@ -41,7 +41,7 @@ private:
   void deregistrate(const std::string& device_id) override {
     auto it = devices_.find(device_id);
     if (it != devices_.end()) {
-      this->logger_->log(
+      logger->log(
           SeverityLevel::TRACE, "Device: {} was deregistered!", device_id);
     } else {
       string error_msg = "Device " + device_id + " does not exist!";
