@@ -11,15 +11,21 @@ struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
   DataConsumerAdapterMock(
       ModelEventSourcePtr event_source, const std::string& name)
       : DataConsumerAdapterInterface(event_source, name) {
-    ON_CALL(*this, start).WillByDefault([this]() {
-      DataConsumerAdapterInterface::start();
-    });
+    ON_CALL(*this, start)
+        .WillByDefault(
+            [this](std::vector<Information_Model::DevicePtr> devices) {
+              DataConsumerAdapterInterface::start(devices);
+            });
     ON_CALL(*this, stop).WillByDefault([this]() {
       DataConsumerAdapterInterface::stop();
     });
   }
-  MOCK_METHOD(void, handleEvent, (ModelRegistryEventPtr), (override));
-  MOCK_METHOD(void, start, (), (override));
+
+  MOCK_METHOD(
+      void, registrate, (Information_Model::NonemptyDevicePtr), (override));
+  MOCK_METHOD(void, deregistrate, (const std::string&), (override));
+  MOCK_METHOD(void, start,
+      (std::vector<Information_Model::DevicePtr> /* devices */), (override));
   MOCK_METHOD(void, stop, (), (override));
 };
 
