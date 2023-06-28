@@ -118,8 +118,8 @@ TEST_F(DCAI_TestFixture, canInitialiseModel) { // NOLINT
   this_thread::sleep_for(10ms * INITIAL_MODEL_SIZE * 2);
 }
 
-TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINTs
-  auto device_id = "12345";
+TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINT
+  string device_id = "12345";
   EXPECT_CALL(*adapter_mock, deregistrate(device_id)).Times(1);
 
   auto event = std::make_shared<ModelRepositoryEvent>(device_id);
