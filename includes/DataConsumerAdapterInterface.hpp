@@ -10,6 +10,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <variant>
 
 /**
@@ -49,26 +50,13 @@ struct DataConsumerAdapterInterface
   virtual ~DataConsumerAdapterInterface() = default;
 
   /**
-   * @brief Forwards an existing device abstraction model to Data Consumer
-   * Adapter implementations, so it can register already managed device
-   * abstraction instances. Blocks all calls to registrate() method until all
-   * device abstractions have finished the registration process
+   * @brief Non-blocking start method, forwards an existing device abstraction
+   * model to Data Consumer Adapter implementations, so it can register already
+   * managed device abstraction instances and starts Data Consumer Adapter
+   * implementation operations.
    *
-   * @note
-   * Used by Information Model Manager
-   *
-   * @param devices pre-existing list of device abstractions
-   */
-  void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
-    auto registrate_lock = std::lock_guard(event_mx_);
-    for (auto device : devices) {
-      registerDevice(Information_Model::NonemptyDevicePtr(device));
-    }
-  }
-
-  /**
-   * @brief Non-blocking start method, throws std::runtime_error if building and
-   * registration interface was not set before this method was called
+   * Blocks all other calls to registrate() method until all device abstractions
+   * have finished the registration process
    *
    * @attention
    * Implementations MUST call this method in their overrides, if custom
@@ -80,7 +68,7 @@ struct DataConsumerAdapterInterface
    */
   virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
     logger->log(HaSLI::SeverityLevel::INFO, "Started!");
-    initialiseModel(devices);
+    std::thread([this, devices]() { initialiseModel(devices); }).detach();
   }
 
   /**
@@ -140,8 +128,16 @@ protected:
   }
 
 private:
+  void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
+    auto registrate_lock = std::lock_guard(event_mx_);
+    for (auto device : devices) {
+      registerDevice(Information_Model::NonemptyDevicePtr(device));
+    }
+  }
+
   void handleEvent(ModelRepositoryEventPtr event) override {
-    match(*event,
+    match(
+        *event,
         [this](Information_Model::NonemptyDevicePtr device) {
           auto registrate_lock = std::lock_guard(event_mx_);
           registerDevice(device);
