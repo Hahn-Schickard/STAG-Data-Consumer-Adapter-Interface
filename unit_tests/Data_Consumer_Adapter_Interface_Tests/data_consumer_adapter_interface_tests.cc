@@ -40,6 +40,32 @@ public:
 
 using EventSourceFakePtr = shared_ptr<EventSourceFake>;
 
+// NOLINTNEXTLINE(readability-identifier-naming)
+struct Naked_DCAI : DataConsumerAdapterInterface {
+  Naked_DCAI(ModelEventSourcePtr event_source, const std::string& adapter_name)
+      : DataConsumerAdapterInterface(move(event_source), adapter_name) {}
+
+  void registrate(NonemptyDevicePtr device) override {
+    DataConsumerAdapterInterface::registrate(device);
+  }
+
+  void deregistrate(const std::string& device_id) override {
+    DataConsumerAdapterInterface::deregistrate(device_id);
+  }
+};
+
+// NOLINTNEXTLINE
+TEST(DataConsumerAdapterInterfaceTests,
+    callingBaseImplementationThrowsRuntimeError) {
+  auto dcai = Naked_DCAI(make_shared<EventSourceFake>(), "dcai");
+
+  EXPECT_THROW(dcai.registrate(NonemptyDevicePtr(
+                   make_shared<MockDevice>("1234", "test", "test device"))),
+      runtime_error);
+  EXPECT_THROW(dcai.deregistrate("1234"), runtime_error);
+}
+
+// NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_TestFixture : public ::testing::Test {
 protected:
   void SetUp() override {
