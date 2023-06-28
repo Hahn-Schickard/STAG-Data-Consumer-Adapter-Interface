@@ -20,8 +20,7 @@ struct DCAI_Example : DataConsumerAdapterInterface {
       /* Never move into Model Event Source ptr either! */
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
-  void start(std::vector<Information_Model::DevicePtr> devices = {}) final {
-    this->logger_->log(SeverityLevel::TRACE, "{} Started!", name);
+  void start(vector<Information_Model::DevicePtr> devices = {}) final {
     DataConsumerAdapterInterface::start(devices);
   }
 
@@ -29,19 +28,19 @@ private:
   void registrate(Information_Model::NonemptyDevicePtr device) override {
     auto emplaced = devices_.emplace(device->getElementId());
     if (emplaced.second) {
-      this->logger_->log(SeverityLevel::TRACE, "Device: {} was registered!",
+      logger->log(SeverityLevel::TRACE, "Device: {} was registered!",
           device->getElementName());
     } else {
-      this->logger_->log(SeverityLevel::TRACE,
+      logger->log(SeverityLevel::TRACE,
           "Device: {} was already registered. Ignoring new instance!",
           device->getElementName());
     }
   }
 
-  void deregistrate(const std::string& device_id) override {
+  void deregistrate(const string& device_id) override {
     auto it = devices_.find(device_id);
     if (it != devices_.end()) {
-      this->logger_->log(
+      logger->log(
           SeverityLevel::TRACE, "Device: {} was deregistered!", device_id);
     } else {
       string error_msg = "Device " + device_id + " does not exist!";
@@ -67,7 +66,7 @@ class EventSourceFake
 
   LoggerPtr logger_;
 
-  void handleException(std::exception_ptr ex_ptr) { // NOLINT
+  void handleException(exception_ptr ex_ptr) { // NOLINT
     try {
       if (ex_ptr) {
         rethrow_exception(ex_ptr);
@@ -94,7 +93,7 @@ public:
   }
 
   void deregisterDevice(string identifier) {
-    auto event = make_shared<ModelRepositoryEvent>(identifier);
+    auto event = std::make_shared<ModelRepositoryEvent>(identifier);
     logger_->log(SeverityLevel::TRACE,
         "Notifing listeners that Device {} is no longer available", identifier);
     notify(move(event));
