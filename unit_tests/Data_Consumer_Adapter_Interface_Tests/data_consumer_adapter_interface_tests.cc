@@ -111,10 +111,11 @@ TEST_F(DCAI_TestFixture, canInitialiseModel) { // NOLINT
   for (const auto& device : devices) {
     auto nonempty_device = NonemptyDevicePtr(device);
     EXPECT_CALL(*adapter_mock, registrate(nonempty_device)).Times(1);
-
-    auto event = std::make_shared<ModelRepositoryEvent>(nonempty_device);
-    event_source->sendEvent(event);
   }
+
+  adapter->start(devices);
+  // we need to keep this thread alive until all registrate() calls are finished
+  this_thread::sleep_for(10ms * INITIAL_MODEL_SIZE * 2);
 }
 
 TEST_F(DCAI_TestFixture, canDeregisterDevice) { // NOLINTs
