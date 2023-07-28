@@ -16,6 +16,8 @@ class PackageConan(ConanFile):
     license = "Apache 2.0"
     description = "STAG interface definitions for Data Consumer Adapter implementations"
     topics = ('stag', 'dcai', 'data-consumer-adapter-interface')
+    description = ""
+    topics = ("")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
                "fPIC": [True, False]}
@@ -51,11 +53,18 @@ class PackageConan(ConanFile):
 
     def requirements(self):
         # @+ START USER REQUIREMENTS
-        self.requires('event_model/[~0.3]@hahn-schickard/stable', headers=True, transitive_headers=True)
-        self.requires("information_model/[~0.3]@hahn-schickard/stable", headers=True, transitive_headers=True)
-        self.requires('hasll/[~0.3]@hahn-schickard/stable', headers=True, libs=True, transitive_headers=True, transitive_libs=True)
-        self.requires("gtest/[~1.11]", headers=True, libs=True, transitive_headers=True, transitive_libs=True)
+        self.requires('event_model/[~0.3]@hahn-schickard/stable',
+                      headers=True, transitive_headers=True)
+        self.requires("information_model/[~0.3]@hahn-schickard/stable",
+                      headers=True, libs=True, transitive_headers=True,  transitive_libs=True)
+        self.requires('hasll/[~0.3]@hahn-schickard/stable', headers=True,
+                      libs=True, transitive_headers=True, transitive_libs=True)
         # @- END USER REQUIREMENTS
+
+    def configure(self):
+        # @+ START USER REQUIREMENTS OPTION CONFIGURATION
+        pass
+        # @- END USER REQUIREMENTS OPTION CONFIGURATION
 
     def layout(self):
         cmake_layout(self)
@@ -68,6 +77,7 @@ class PackageConan(ConanFile):
         tc = CMakeToolchain(self)
         tc.variables['STATIC_CODE_ANALYSIS'] = False
         tc.variables['RUN_TESTS'] = False
+        tc.variables['COVERAGE_TRACKING'] = False
         tc.variables['CMAKE_CONAN'] = False
         tc.cache_variables["CMAKE_POLICY_DEFAULT_CMP0077"] = "NEW"
         tc.generate()
@@ -88,8 +98,8 @@ class PackageConan(ConanFile):
         self.cpp_info.libs = collect_libs(self)
         self.cpp_info.set_property("cmake_find_mode", "both")
         # @+ START USER DEFINES
-        self.cpp_info.set_property("cmake_file_name", to_camel_case(self.name))
-        cmake_target_name = to_camel_case(
-            self.name) + "::" + to_camel_case(self.name)
-        self.cpp_info.set_property("cmake_target_name", cmake_target_name)
+        project_name = to_camel_case(self.name)
         # @- END USER DEFINES
+        self.cpp_info.set_property("cmake_file_name", project_name)
+        cmake_target_name = project_name + "::" + project_name
+        self.cpp_info.set_property("cmake_target_name", cmake_target_name)
