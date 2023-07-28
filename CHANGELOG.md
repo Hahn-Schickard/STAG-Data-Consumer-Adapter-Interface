@@ -1,4 +1,11 @@
 # Changelog
+## [0.2.2] - 2023.07.28
+### Added
+ - STAG logo to documentation 
+
+### Removed 
+ - code coverage hooks from conan package 
+
 ## [0.2.1] - 2023.07.24
 ### Changed
  - conan recipe to use conan v2 syntax
