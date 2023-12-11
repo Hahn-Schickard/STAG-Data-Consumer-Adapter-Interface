@@ -75,6 +75,12 @@ protected:
     adapter = adapter_mock;
   }
 
+  void TearDown() override {
+    adapter.reset();
+    adapter_mock.reset();
+    event_source.reset();
+  }
+
   EventSourceFakePtr event_source; // NOLINT(readability-identifier-naming)
   DCAI_MockPtr adapter_mock; // NOLINT(readability-identifier-naming)
   DCAI_Ptr adapter; // NOLINT(readability-identifier-naming)
