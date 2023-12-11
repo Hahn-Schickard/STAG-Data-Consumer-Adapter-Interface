@@ -42,12 +42,16 @@ struct DataConsumerAdapterInterface
   DataConsumerAdapterInterface(
       ModelEventSourcePtr event_source, const std::string& adapter_name)
       : EventListenerInterface(event_source), name(adapter_name),
-        logger(HaSLI::LoggerManager::registerLogger(name)) {
+        logger(HaSLI::LoggerManager::registerLogger(name)), init_thread_() {
     logger->log(HaSLI::SeverityLevel::TRACE,
         "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
   }
 
-  virtual ~DataConsumerAdapterInterface() = default;
+  virtual ~DataConsumerAdapterInterface() {
+    if (init_thread_.joinable()) {
+      init_thread_.join();
+    }
+  }
 
   /**
    * @brief Non-blocking start method, forwards an existing device abstraction
@@ -68,7 +72,7 @@ struct DataConsumerAdapterInterface
    */
   virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
     logger->log(HaSLI::SeverityLevel::INFO, "Started!");
-    std::thread([this, devices]() { initialiseModel(devices); }).detach();
+    init_thread_ = std::thread([this, devices]() { initialiseModel(devices); });
   }
 
   /**
@@ -166,6 +170,7 @@ private:
   }
 
   std::mutex event_mx_;
+  std::thread init_thread_;
 };
 
 using DCAI = DataConsumerAdapterInterface;
