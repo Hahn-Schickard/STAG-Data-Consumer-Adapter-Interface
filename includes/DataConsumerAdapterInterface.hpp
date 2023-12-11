@@ -76,7 +76,7 @@ struct DataConsumerAdapterInterface
   }
 
   /**
-   * @brief Blocking stop method, stops Technology Adapter implementation
+   * @brief Blocking stop method, stops Data Consumer Adapter implementation
    * communication operations. Blocks until communication operations are
    * finished
    *
