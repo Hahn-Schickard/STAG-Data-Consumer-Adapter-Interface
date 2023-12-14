@@ -61,6 +61,9 @@ class PackageConan(ConanFile):
                       libs=True, transitive_headers=True, transitive_libs=True)
         # @- END USER REQUIREMENTS
 
+    def build_requirements(self):
+        self.test_requires("gtest/[~1.11]")
+
     def configure(self):
         # @+ START USER REQUIREMENTS OPTION CONFIGURATION
         pass
