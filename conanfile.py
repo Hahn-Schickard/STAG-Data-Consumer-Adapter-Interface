@@ -55,7 +55,7 @@ class PackageConan(ConanFile):
         # @+ START USER REQUIREMENTS
         self.requires('event_model/[~0.3]@hahn-schickard/stable',
                       headers=True, transitive_headers=True)
-        self.requires("information_model/[~0.3]@hahn-schickard/stable",
+        self.requires("information_model/[~0.4]@hahn-schickard/stable",
                       headers=True, libs=True, transitive_headers=True,  transitive_libs=True)
         self.requires('hasll/[~0.3]@hahn-schickard/stable', headers=True,
                       libs=True, transitive_headers=True, transitive_libs=True)
