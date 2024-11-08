@@ -1,4 +1,8 @@
 # Changelog
+## [0.3.0-RC1] - 2024.11.08
+### Changed 
+ - information_model dependency to pre-release version 0.4
+
 ## [0.2.2] - 2023.07.28
 ### Added
  - STAG logo to documentation 
