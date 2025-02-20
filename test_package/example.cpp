@@ -2,7 +2,6 @@
 
 #include "Event_Model/AsyncEventSource.hpp"
 #include "HaSLL/LoggerManager.hpp"
-#include "HaSLL/SPD_LoggerRepository.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <exception>
@@ -26,28 +25,34 @@ void printException(const exception& e, int level = 0) {
 }
 
 int main() {
+  auto status = EXIT_SUCCESS;
   try {
-    auto repo = make_shared<SPD_LoggerRepository>();
-    LoggerManager::initialise(repo);
+    LoggerManager::initialise(makeDefaultRepository());
 
-    auto event_source =
-        std::make_shared<AsyncEventSource<ModelRepositoryEvent>>(
-            [](exception_ptr ex_ptr) {
-              try {
-                if (ex_ptr) {
-                  rethrow_exception(ex_ptr);
+    try {
+      auto event_source =
+          std::make_shared<AsyncEventSource<ModelRepositoryEvent>>(
+              [](exception_ptr ex_ptr) {
+                try {
+                  if (ex_ptr) {
+                    rethrow_exception(ex_ptr);
+                  }
+                } catch (const exception& ex) {
+                  printException(ex);
                 }
-              } catch (const exception& ex) {
-                printException(ex);
-              }
-            });
-    auto dcai =
-        std::make_shared<DataConsumerAdapterInterface>(event_source, "example");
+              });
+      auto dcai = std::make_shared<DataConsumerAdapterInterface>(
+          event_source, "example");
 
-  } catch (const exception& ex) {
-    printException(ex);
-    exit(EXIT_FAILURE);
+    } catch (const exception& ex) {
+      printException(ex);
+      status = EXIT_FAILURE;
+    }
+    LoggerManager::terminate();
+  } catch (...) {
+    cerr << "Unknown error occurred during program execution." << endl;
+    status = EXIT_FAILURE;
   }
 
-  exit(EXIT_SUCCESS);
+  exit(status);
 }

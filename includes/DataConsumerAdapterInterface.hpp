@@ -42,8 +42,8 @@ struct DataConsumerAdapterInterface
   DataConsumerAdapterInterface(
       ModelEventSourcePtr event_source, const std::string& adapter_name)
       : EventListenerInterface(event_source), name(adapter_name),
-        logger(HaSLI::LoggerManager::registerLogger(name)), init_thread_() {
-    logger->log(HaSLI::SeverityLevel::TRACE,
+        logger(HaSLL::LoggerManager::registerLogger(name)), init_thread_() {
+    logger->trace(
         "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
   }
 
@@ -71,7 +71,7 @@ struct DataConsumerAdapterInterface
    * blocked from executing other operations after the call to this method.
    */
   virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
-    logger->log(HaSLI::SeverityLevel::INFO, "Started!");
+    logger->info("Started!");
     init_thread_ = std::thread([this, devices]() { initialiseModel(devices); });
   }
 
@@ -92,7 +92,7 @@ struct DataConsumerAdapterInterface
   virtual void stop() { logger->info("{} stopped", name); }
 
   const std::string name; // NOLINT(readability-identifier-naming)
-  const HaSLI::LoggerPtr logger; // NOLINT(readability-identifier-naming)
+  const HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)
 
 protected:
   /**

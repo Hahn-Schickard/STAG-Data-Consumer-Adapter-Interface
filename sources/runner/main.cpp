@@ -1,7 +1,7 @@
 #include "DataConsumerAdapterInterface.hpp"
 #include "Event_Model/AsyncEventSource.hpp"
+
 #include "HaSLL/LoggerManager.hpp"
-#include "HaSLL/SPD_LoggerRepository.hpp"
 #include "Information_Model/mocks/DeviceMockBuilder.hpp"
 #include "Variant_Visitor.hpp"
 
@@ -28,11 +28,9 @@ private:
   void registrate(Information_Model::NonemptyDevicePtr device) override {
     auto emplaced = devices_.emplace(device->getElementId());
     if (emplaced.second) {
-      logger->log(SeverityLevel::TRACE, "Device: {} was registered!",
-          device->getElementName());
+      logger->trace("Device: {} was registered!", device->getElementName());
     } else {
-      logger->log(SeverityLevel::TRACE,
-          "Device: {} was already registered. Ignoring new instance!",
+      logger->trace("Device: {} was already registered. Ignoring new instance!",
           device->getElementName());
     }
   }
@@ -40,8 +38,7 @@ private:
   void deregistrate(const string& device_id) override {
     auto it = devices_.find(device_id);
     if (it != devices_.end()) {
-      logger->log(
-          SeverityLevel::TRACE, "Device: {} was deregistered!", device_id);
+      logger->trace("Device: {} was deregistered!", device_id);
     } else {
       string error_msg = "Device " + device_id + " does not exist!";
       throw runtime_error(error_msg);
@@ -72,7 +69,7 @@ class EventSourceFake
         rethrow_exception(ex_ptr);
       }
     } catch (const exception& ex) {
-      logger_->log(SeverityLevel::ERROR,
+      logger_->error(
           "An exception occurred while notifying a listener: {}", ex.what());
       printException(ex);
     }
@@ -86,7 +83,7 @@ public:
 
   void registerDevice(NonemptyDevicePtr device) {
     auto event = std::make_shared<ModelRepositoryEvent>(device);
-    logger_->log(SeverityLevel::TRACE,
+    logger_->trace(
         "Notifing listeners that Device {} is available for registration.",
         device->getElementId());
     notify(move(event));
@@ -94,47 +91,52 @@ public:
 
   void deregisterDevice(string identifier) {
     auto event = std::make_shared<ModelRepositoryEvent>(identifier);
-    logger_->log(SeverityLevel::TRACE,
+    logger_->trace(
         "Notifing listeners that Device {} is no longer available", identifier);
     notify(move(event));
   }
 };
 
 int main() {
+  auto status = EXIT_SUCCESS;
   try {
-    auto config = HaSLL::SPD_Configuration("./log", "logfile.log",
-        "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$",
-        HaSLL::SeverityLevel::TRACE, true, 8192, 2, 25, 100, 1); // NOLINT
-    auto repo = make_shared<SPD_LoggerRepository>(config);
-    LoggerManager::initialise(repo);
+    LoggerManager::initialise(makeDefaultRepository());
+    try {
 
-    auto event_source = make_shared<EventSourceFake>();
-    auto dcai = DCAI_Example(event_source);
+      auto event_source = make_shared<EventSourceFake>();
+      auto dcai = DCAI_Example(event_source);
 
-    dcai.start();
+      dcai.start();
 
-    string device_id = "1234";
-    {
-      auto* builder = new Information_Model::testing::DeviceMockBuilder();
-      builder->buildDeviceBase(
-          device_id, "Mocky", "A mocked device with no elements");
-      NonemptyDevicePtr result(builder->getResult());
-      event_source->registerDevice(result);
-      event_source->registerDevice(
-          result); // check if double registration is handled
-      delete builder;
+      string device_id = "1234";
+      {
+        auto* builder = new Information_Model::testing::DeviceMockBuilder();
+        builder->buildDeviceBase(
+            device_id, "Mocky", "A mocked device with no elements");
+        NonemptyDevicePtr result(builder->getResult());
+        event_source->registerDevice(result);
+        event_source->registerDevice(
+            result); // check if double registration is handled
+        delete builder;
+      }
+
+      event_source->deregisterDevice(device_id);
+      event_source->deregisterDevice("nonsense ID"); // check bad ID deregister
+
+      this_thread::sleep_for(2s);
+
+      dcai.stop();
+
+      status = EXIT_SUCCESS;
+    } catch (const exception& ex) {
+      printException(ex);
+      status = EXIT_FAILURE;
     }
-
-    event_source->deregisterDevice(device_id);
-    event_source->deregisterDevice("nonsense ID"); // check bad ID deregister
-
-    this_thread::sleep_for(2s);
-
-    dcai.stop();
-
-    return EXIT_SUCCESS;
-  } catch (const exception& ex) {
-    printException(ex);
-    return EXIT_FAILURE;
+    LoggerManager::terminate();
+  } catch (...) {
+    cerr << "Unknown error occurred during program execution." << endl;
+    status = EXIT_FAILURE;
   }
+
+  exit(status);
 }
