@@ -100,9 +100,9 @@ struct DataConsumerAdapterInterface
    */
   virtual void stop() { logger->info("{} stopped", name_); }
 
+protected:
   HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)
 
-protected:
   /**
    * @brief Adds a given device instance to Data Consumer Adapter
    * implementation. Blocks all other calls to registrate() method until device
