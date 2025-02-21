@@ -5,6 +5,14 @@ include:
 variables:
   IMAGE_VER: "6.5.0"
 
+.windows-job:
+  tags:
+    - windows-docker
+  variables:
+    GIT_CLONE_PATH: ${CI_BUILDS_DIR}/${CI_PROJECT_ID}/${CI_CONCURRENT_ID}/${CI_CONCURRENT_PROJECT_ID}
+  image:
+    name: ${DOCKER_REGISTRY}/hs-conan-windows-ltsc2019:${IMAGE_VER}
+
 build:debian-bullseye:
   extends: .build
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:${IMAGE_VER}
@@ -24,11 +32,9 @@ build:fedora-latest:
     entrypoint: ["/bin/sh", "-c"]
 
 build:windows-ltsc2019:
-  extends: .build
-  tags:
-    - windows-docker
-  image:
-    name: ${DOCKER_REGISTRY}/hs-conan-windows-ltsc2019:${IMAGE_VER}
+  extends: 
+    - .build
+    - .windows-job
 
 test:debian-bullseye:
   extends: .test
@@ -57,11 +63,9 @@ test:fedora-latest:
     - build:fedora-latest
 
 test:windows-ltsc2019:
-  extends: .test
-  tags:
-    - windows-docker
-  image:
-    name: ${DOCKER_REGISTRY}/hs-conan-windows-ltsc2019:${IMAGE_VER}
+  extends: 
+    - .test
+    - .windows-job
   needs:
     - build:windows-ltsc2019
 
@@ -173,11 +177,9 @@ package:fedora-latest:
     entrypoint: ["/bin/sh", "-c"]
 
 package:windows-ltsc2019:
-  extends: .package
-  tags:
-    - windows-docker
-  image:
-    name: ${DOCKER_REGISTRY}/hs-conan-windows-ltsc2019:${IMAGE_VER}
+  extends: 
+    - .package
+    - .windows-job
   before_script:
     - $PROJECT_NAME=python3 ./utility/.getProjectName.py
     - $VERSION=python3 ./utility/.getVersionFromTag.py
