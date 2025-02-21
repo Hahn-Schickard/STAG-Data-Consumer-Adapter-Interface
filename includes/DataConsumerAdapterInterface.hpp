@@ -38,13 +38,17 @@ using ModelEventSourcePtr =
  */
 struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRepositoryEvent> {
+  using Devices = std::vector<Information_Model::DevicePtr>;
+
+  DataConsumerAdapterInterface(const DataConsumerAdapterInterface&) = delete;
 
   DataConsumerAdapterInterface(
-      ModelEventSourcePtr event_source, const std::string& adapter_name)
-      : EventListenerInterface(event_source), name(adapter_name),
-        logger(HaSLI::LoggerManager::registerLogger(name)), init_thread_() {
-    logger->log(HaSLI::SeverityLevel::TRACE,
-        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
+      const ModelEventSourcePtr& event_source, const std::string& name)
+      : EventListenerInterface(event_source),
+        logger(HaSLL::LoggerManager::registerLogger(name)), name_(name) {
+    logger->trace(
+        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
+        name_);
   }
 
   virtual ~DataConsumerAdapterInterface() {
@@ -52,6 +56,16 @@ struct DataConsumerAdapterInterface
       init_thread_.join();
     }
   }
+
+  DataConsumerAdapterInterface& operator=(
+      const DataConsumerAdapterInterface&) = delete;
+
+  /**
+   * @brief Returns the assigned adapter name
+   *
+   * @return std::string
+   */
+  std::string name() const { return name_; }
 
   /**
    * @brief Non-blocking start method, forwards an existing device abstraction
@@ -70,8 +84,8 @@ struct DataConsumerAdapterInterface
    * Implementations MUST guarantee that the calling thread WILL NOT be
    * blocked from executing other operations after the call to this method.
    */
-  virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
-    logger->log(HaSLI::SeverityLevel::INFO, "Started!");
+  virtual void start(const Devices& devices = {}) {
+    logger->info("Started!");
     init_thread_ = std::thread([this, devices]() { initialiseModel(devices); });
   }
 
@@ -89,12 +103,11 @@ struct DataConsumerAdapterInterface
    * started in @see start() or wait for the result of any async tasks started
    * there
    */
-  virtual void stop() { logger->info("{} stopped", name); }
-
-  const std::string name; // NOLINT(readability-identifier-naming)
-  const HaSLI::LoggerPtr logger; // NOLINT(readability-identifier-naming)
+  virtual void stop() { logger->info("{} stopped", name_); }
 
 protected:
+  HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)
+
   /**
    * @brief Adds a given device instance to Data Consumer Adapter
    * implementation. Blocks all other calls to registrate() method until device
@@ -109,8 +122,9 @@ protected:
    *
    * @param device new/changed device instance
    */
-  virtual void registrate(Information_Model::NonemptyDevicePtr /* device */) {
-    std::string error_msg = "Called based implementation of " + name +
+  virtual void registrate(
+      const Information_Model::NonemptyDevicePtr& /* device */) {
+    std::string error_msg = "Called based implementation of " + name_ +
         " DataConsumerAdapterInterface::registrate()";
     throw std::runtime_error(error_msg);
   }
@@ -126,14 +140,14 @@ protected:
    * @param device_id
    */
   virtual void deregistrate(const std::string& /* device_id */) {
-    std::string error_msg = "Called based implementation of " + name +
+    std::string error_msg = "Called based implementation of " + name_ +
         " DataConsumerAdapterInterface::deregistrate()";
     throw std::runtime_error(error_msg);
   }
 
 private:
-  void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
-    auto registrate_lock = std::lock_guard(event_mx_);
+  void initialiseModel(const Devices& devices) {
+    auto registrate_lock = std::scoped_lock(event_mx_);
     for (auto device : devices) {
       registerDevice(Information_Model::NonemptyDevicePtr(device));
     }
@@ -143,7 +157,7 @@ private:
     match(
         *event,
         [this](Information_Model::NonemptyDevicePtr device) {
-          auto registrate_lock = std::lock_guard(event_mx_);
+          auto registrate_lock = std::scoped_lock(event_mx_);
           registerDevice(device);
         },
         [this](const std::string& device_id) {
@@ -153,22 +167,23 @@ private:
             logger->error(
                 "{} Data Consumer Adapter encountered an unhandled exception "
                 "while deregistrating device {}. Exception: {}",
-                name, device_id, ex.what());
+                name_, device_id, ex.what());
           }
         });
   }
 
-  void registerDevice(Information_Model::NonemptyDevicePtr device) {
+  void registerDevice(const Information_Model::NonemptyDevicePtr& device) {
     try {
       registrate(device);
     } catch (const std::exception& ex) {
       logger->error(
           "{} Data Consumer Adapter encountered an unhandled exception "
           "while registrating device {}. Exception: {}",
-          name, device->getElementId(), ex.what());
+          name_, device->getElementId(), ex.what());
     }
   }
 
+  std::string name_;
   std::mutex event_mx_;
   std::thread init_thread_;
 };

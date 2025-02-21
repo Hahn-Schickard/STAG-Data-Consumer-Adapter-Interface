@@ -42,10 +42,11 @@ using EventSourceFakePtr = shared_ptr<EventSourceFake>;
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 struct Naked_DCAI : DataConsumerAdapterInterface {
-  Naked_DCAI(ModelEventSourcePtr event_source, const std::string& adapter_name)
-      : DataConsumerAdapterInterface(move(event_source), adapter_name) {}
+  Naked_DCAI(
+      const ModelEventSourcePtr& event_source, const std::string& adapter_name)
+      : DataConsumerAdapterInterface(event_source, adapter_name) {}
 
-  void registrate(NonemptyDevicePtr device) override {
+  void registrate(const NonemptyDevicePtr& device) override {
     DataConsumerAdapterInterface::registrate(device);
   }
 
