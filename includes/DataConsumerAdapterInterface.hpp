@@ -41,11 +41,12 @@ struct DataConsumerAdapterInterface
   using Devices = std::vector<Information_Model::DevicePtr>;
 
   DataConsumerAdapterInterface(
-      const ModelEventSourcePtr& event_source, const std::string& adapter_name)
-      : EventListenerInterface(event_source), name(adapter_name),
-        logger(HaSLL::LoggerManager::registerLogger(name)) {
+      const ModelEventSourcePtr& event_source, const std::string& name)
+      : EventListenerInterface(event_source),
+        logger(HaSLL::LoggerManager::registerLogger(name)), name_(name) {
     logger->trace(
-        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
+        "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})",
+        name_);
   }
 
   virtual ~DataConsumerAdapterInterface() {
@@ -53,6 +54,13 @@ struct DataConsumerAdapterInterface
       init_thread_.join();
     }
   }
+
+  /**
+   * @brief Returns the assigned adapter name
+   *
+   * @return std::string
+   */
+  std::string name() const { return name_; }
 
   /**
    * @brief Non-blocking start method, forwards an existing device abstraction
@@ -90,10 +98,9 @@ struct DataConsumerAdapterInterface
    * started in @see start() or wait for the result of any async tasks started
    * there
    */
-  virtual void stop() { logger->info("{} stopped", name); }
+  virtual void stop() { logger->info("{} stopped", name_); }
 
-  const std::string name; // NOLINT(readability-identifier-naming)
-  const HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)
+  HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)
 
 protected:
   /**
@@ -112,7 +119,7 @@ protected:
    */
   virtual void registrate(
       const Information_Model::NonemptyDevicePtr& /* device */) {
-    std::string error_msg = "Called based implementation of " + name +
+    std::string error_msg = "Called based implementation of " + name_ +
         " DataConsumerAdapterInterface::registrate()";
     throw std::runtime_error(error_msg);
   }
@@ -128,7 +135,7 @@ protected:
    * @param device_id
    */
   virtual void deregistrate(const std::string& /* device_id */) {
-    std::string error_msg = "Called based implementation of " + name +
+    std::string error_msg = "Called based implementation of " + name_ +
         " DataConsumerAdapterInterface::deregistrate()";
     throw std::runtime_error(error_msg);
   }
@@ -155,7 +162,7 @@ private:
             logger->error(
                 "{} Data Consumer Adapter encountered an unhandled exception "
                 "while deregistrating device {}. Exception: {}",
-                name, device_id, ex.what());
+                name_, device_id, ex.what());
           }
         });
   }
@@ -167,10 +174,11 @@ private:
       logger->error(
           "{} Data Consumer Adapter encountered an unhandled exception "
           "while registrating device {}. Exception: {}",
-          name, device->getElementId(), ex.what());
+          name_, device->getElementId(), ex.what());
     }
   }
 
+  std::string name_;
   std::mutex event_mx_;
   std::thread init_thread_;
 };
