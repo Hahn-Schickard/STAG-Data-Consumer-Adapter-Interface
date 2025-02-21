@@ -55,6 +55,7 @@ void printException(const exception& e, int level = 0) {
   } catch (const exception& nested_exception) {
     printException(nested_exception, level + 1);
   } catch (...) {
+    cerr << "Caught an unhandled exception" << endl;
   }
 }
 
