@@ -43,7 +43,7 @@ struct DataConsumerAdapterInterface
   DataConsumerAdapterInterface(
       const ModelEventSourcePtr& event_source, const std::string& adapter_name)
       : EventListenerInterface(event_source), name(adapter_name),
-        logger(HaSLL::LoggerManager::registerLogger(name)), init_thread_() {
+        logger(HaSLL::LoggerManager::registerLogger(name)) {
     logger->trace(
         "DataConsumerAdapterInterface::DataConsumerAdapterInterface({})", name);
   }
@@ -135,7 +135,7 @@ protected:
 
 private:
   void initialiseModel(const Devices& devices) {
-    auto registrate_lock = std::lock_guard(event_mx_);
+    auto registrate_lock = std::scoped_lock(event_mx_);
     for (auto device : devices) {
       registerDevice(Information_Model::NonemptyDevicePtr(device));
     }
@@ -145,7 +145,7 @@ private:
     match(
         *event,
         [this](Information_Model::NonemptyDevicePtr device) {
-          auto registrate_lock = std::lock_guard(event_mx_);
+          auto registrate_lock = std::scoped_lock(event_mx_);
           registerDevice(device);
         },
         [this](const std::string& device_id) {
