@@ -44,7 +44,7 @@ using EventSourceFakePtr = shared_ptr<EventSourceFake>;
 struct Naked_DCAI : DataConsumerAdapterInterface {
   Naked_DCAI(
       const ModelEventSourcePtr& event_source, const std::string& adapter_name)
-      : DataConsumerAdapterInterface(move(event_source), adapter_name) {}
+      : DataConsumerAdapterInterface(event_source, adapter_name) {}
 
   void registrate(const NonemptyDevicePtr& device) override {
     DataConsumerAdapterInterface::registrate(device);
