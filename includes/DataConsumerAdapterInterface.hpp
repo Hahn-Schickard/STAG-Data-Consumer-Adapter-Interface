@@ -40,6 +40,8 @@ struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRepositoryEvent> {
   using Devices = std::vector<Information_Model::DevicePtr>;
 
+  DataConsumerAdapterInterface(const DataConsumerAdapterInterface&) = delete;
+
   DataConsumerAdapterInterface(
       const ModelEventSourcePtr& event_source, const std::string& name)
       : EventListenerInterface(event_source),
@@ -54,6 +56,9 @@ struct DataConsumerAdapterInterface
       init_thread_.join();
     }
   }
+
+  DataConsumerAdapterInterface& operator=(
+      const DataConsumerAdapterInterface&) = delete;
 
   /**
    * @brief Returns the assigned adapter name
