@@ -38,9 +38,10 @@ using ModelEventSourcePtr =
  */
 struct DataConsumerAdapterInterface
     : public Event_Model::EventListenerInterface<ModelRepositoryEvent> {
+  using Devices = std::vector<Information_Model::DevicePtr>;
 
   DataConsumerAdapterInterface(
-      ModelEventSourcePtr event_source, const std::string& adapter_name)
+      const ModelEventSourcePtr& event_source, const std::string& adapter_name)
       : EventListenerInterface(event_source), name(adapter_name),
         logger(HaSLL::LoggerManager::registerLogger(name)), init_thread_() {
     logger->trace(
@@ -70,7 +71,7 @@ struct DataConsumerAdapterInterface
    * Implementations MUST guarantee that the calling thread WILL NOT be
    * blocked from executing other operations after the call to this method.
    */
-  virtual void start(std::vector<Information_Model::DevicePtr> devices = {}) {
+  virtual void start(const Devices& devices = {}) {
     logger->info("Started!");
     init_thread_ = std::thread([this, devices]() { initialiseModel(devices); });
   }
@@ -109,7 +110,8 @@ protected:
    *
    * @param device new/changed device instance
    */
-  virtual void registrate(Information_Model::NonemptyDevicePtr /* device */) {
+  virtual void registrate(
+      const Information_Model::NonemptyDevicePtr& /* device */) {
     std::string error_msg = "Called based implementation of " + name +
         " DataConsumerAdapterInterface::registrate()";
     throw std::runtime_error(error_msg);
@@ -132,7 +134,7 @@ protected:
   }
 
 private:
-  void initialiseModel(std::vector<Information_Model::DevicePtr> devices) {
+  void initialiseModel(const Devices& devices) {
     auto registrate_lock = std::lock_guard(event_mx_);
     for (auto device : devices) {
       registerDevice(Information_Model::NonemptyDevicePtr(device));
@@ -158,7 +160,7 @@ private:
         });
   }
 
-  void registerDevice(Information_Model::NonemptyDevicePtr device) {
+  void registerDevice(const Information_Model::NonemptyDevicePtr& device) {
     try {
       registrate(device);
     } catch (const std::exception& ex) {

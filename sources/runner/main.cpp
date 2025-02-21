@@ -16,16 +16,16 @@ using namespace Information_Model;
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
-  DCAI_Example(ModelEventSourcePtr source)
+  DCAI_Example(const ModelEventSourcePtr& source)
       /* Never move into Model Event Source ptr either! */
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
-  void start(vector<Information_Model::DevicePtr> devices = {}) final {
+  void start(const Devices& devices = {}) final {
     DataConsumerAdapterInterface::start(devices);
   }
 
 private:
-  void registrate(Information_Model::NonemptyDevicePtr device) override {
+  void registrate(const Information_Model::NonemptyDevicePtr& device) override {
     auto emplaced = devices_.emplace(device->getElementId());
     if (emplaced.second) {
       logger->trace("Device: {} was registered!", device->getElementName());
@@ -81,7 +81,7 @@ public:
             bind(&EventSourceFake::handleException, this, placeholders::_1)),
         logger_(LoggerManager::registerTypedLogger(this)) {}
 
-  void registerDevice(NonemptyDevicePtr device) {
+  void registerDevice(const NonemptyDevicePtr& device) {
     auto event = std::make_shared<ModelRepositoryEvent>(device);
     logger_->trace(
         "Notifing listeners that Device {} is available for registration.",
@@ -89,7 +89,7 @@ public:
     notify(move(event));
   }
 
-  void deregisterDevice(string identifier) {
+  void deregisterDevice(const string& identifier) {
     auto event = std::make_shared<ModelRepositoryEvent>(identifier);
     logger_->trace(
         "Notifing listeners that Device {} is no longer available", identifier);

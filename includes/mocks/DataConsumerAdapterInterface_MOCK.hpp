@@ -9,7 +9,7 @@ namespace Data_Consumer_Adapter {
 namespace testing {
 struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
   DataConsumerAdapterMock(
-      ModelEventSourcePtr event_source, const std::string& name)
+      const ModelEventSourcePtr& event_source, const std::string& name)
       : DataConsumerAdapterInterface(event_source, name) {
     ON_CALL(*this, start)
         .WillByDefault(
@@ -21,11 +21,10 @@ struct DataConsumerAdapterMock : DataConsumerAdapterInterface {
     });
   }
 
-  MOCK_METHOD(
-      void, registrate, (Information_Model::NonemptyDevicePtr), (override));
+  MOCK_METHOD(void, registrate, (const Information_Model::NonemptyDevicePtr&),
+      (override));
   MOCK_METHOD(void, deregistrate, (const std::string&), (override));
-  MOCK_METHOD(void, start,
-      (std::vector<Information_Model::DevicePtr> /* devices */), (override));
+  MOCK_METHOD(void, start, (const Devices& /* devices */), (override));
   MOCK_METHOD(void, stop, (), (override));
 };
 
