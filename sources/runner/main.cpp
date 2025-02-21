@@ -16,7 +16,7 @@ using namespace Information_Model;
 
 // NOLINTNEXTLINE(readability-identifier-naming)
 struct DCAI_Example : DataConsumerAdapterInterface {
-  DCAI_Example(const ModelEventSourcePtr& source)
+  explicit DCAI_Example(const ModelEventSourcePtr& source)
       /* Never move into Model Event Source ptr either! */
       : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
 
@@ -26,8 +26,8 @@ struct DCAI_Example : DataConsumerAdapterInterface {
 
 private:
   void registrate(const Information_Model::NonemptyDevicePtr& device) override {
-    auto emplaced = devices_.emplace(device->getElementId());
-    if (emplaced.second) {
+    auto [_, emplaced] = devices_.emplace(device->getElementId());
+    if (emplaced) {
       logger->trace("Device: {} was registered!", device->getElementName());
     } else {
       logger->trace("Device: {} was already registered. Ignoring new instance!",
@@ -63,7 +63,7 @@ class EventSourceFake
 
   LoggerPtr logger_;
 
-  void handleException(exception_ptr ex_ptr) { // NOLINT
+  void handleException(const exception_ptr& ex_ptr) const {
     try {
       if (ex_ptr) {
         rethrow_exception(ex_ptr);
@@ -110,14 +110,15 @@ int main() {
 
       string device_id = "1234";
       {
-        auto* builder = new Information_Model::testing::DeviceMockBuilder();
+        auto builder =
+            make_unique<Information_Model::testing::DeviceMockBuilder>();
         builder->buildDeviceBase(
             device_id, "Mocky", "A mocked device with no elements");
         NonemptyDevicePtr result(builder->getResult());
         event_source->registerDevice(result);
         event_source->registerDevice(
             result); // check if double registration is handled
-        delete builder;
+        builder.reset();
       }
 
       event_source->deregisterDevice(device_id);
