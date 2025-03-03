@@ -1,7 +1,27 @@
 # Changelog
-## [0.3.0-RC1] - 2024.11.08
+## [0.3.0] - 2025.03.03
+### Added 
+ - Windows 10 support 
+ - `GTest` v1.11 as a **build_requires** dependency
+ - `~DataConsumerAdapterInterface` dtor implementation
+ - `DataConsumerAdapterInterface::name()` method
+ - `DataConsumerAdapterInterface::Devices` alias for `std::vector<Information_Model::DevicePtr>`
+ - `DataConsumerAdapterInterface::init_thread_` field to managed model initialization and cleanup
+
 ### Changed 
- - information_model dependency to pre-release version 0.4
+ - `Information_Model` dependency to v0.4
+ - `HaSLL` dependency to v0.4
+ - `DataConsumerAdapterInterface::name` field to be **private**
+ - `DataConsumerAdapterInterface::logger` field to be **protected**
+ - `virtual void DataConsumerAdapterInterface::registrate(Information_Model::NonemptyDevicePtr)` into `virtual void DataConsumerAdapterInterface::registrate(const Information_Model::NonemptyDevicePtr&)`
+ - `virtual void DataConsumerAdapterInterface::start(std::vector<Information_Model::DevicePtr> devices = {})` into `virtual void DataConsumerAdapterInterface::start(const Devices& devices)`
+ - `void DataConsumerAdapterInterface::initialiseModel(std::vector<Information_Model::DevicePtr>)` into  `void DataConsumerAdapterInterface::initialiseModel(const Devices&)`
+ - `void DataConsumerAdapterInterface::registerDevice(Information_Model::NonemptyDevicePtr)` into `void DataConsumerAdapterInterface::registerDevice(const Information_Model::NonemptyDevicePtr&)`
+ - `std::lock_guard` instances into `std::scoped_lock`
+
+### Removed
+ - explicit `Event_Model` dependency
+ - `DataConsumerAdapterInterface` copy ctor and assignment operator
 
 ## [0.2.2] - 2023.07.28
 ### Added
