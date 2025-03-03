@@ -15,3 +15,25 @@ target_link_libraries(${THIS} PRIVATE
 )
 
 target_compile_features(${THIS} PUBLIC cxx_std_17)
+
+if(WIN32)
+    add_custom_command(TARGET ${THIS} POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy 
+                        -t $<TARGET_FILE_DIR:${THIS}> 
+                        $<TARGET_RUNTIME_DLLS:${THIS}>
+                        COMMAND_EXPAND_LISTS
+    )
+    # Workaround to get conan .dll files into build
+    foreach(directory ${CONAN_RUNTIME_LIB_DIRS})
+        file(GLOB dir_dependencies "${directory}/*.dll")
+        if(dir_dependencies)
+            list(APPEND dependencies "${dir_dependencies}")
+        endif()
+    endforeach()
+    add_custom_command(TARGET ${THIS} POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy 
+                        -t $<TARGET_FILE_DIR:${THIS}> 
+                        ${dependencies}
+                        COMMAND_EXPAND_LISTS
+    )
+endif()
