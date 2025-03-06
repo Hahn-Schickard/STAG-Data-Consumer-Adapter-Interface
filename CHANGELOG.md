@@ -1,8 +1,8 @@
 # Changelog
-## [0.3.0] - 2025.03.03
+## [0.3.0] - 2025.03.06
 ### Added 
  - Windows 10 support 
- - `GTest` v1.11 as a **build_requires** dependency
+ - `GTest` v1.16 as a **build_requires** dependency
  - `~DataConsumerAdapterInterface` dtor implementation
  - `DataConsumerAdapterInterface::name()` method
  - `DataConsumerAdapterInterface::Devices` alias for `std::vector<Information_Model::DevicePtr>`
