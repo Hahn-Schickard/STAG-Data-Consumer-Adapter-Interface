@@ -91,7 +91,7 @@ NonemptyDevicePtr makeDevice(const string& id) {
   auto builder = DeviceMockBuilder();
   builder.buildDeviceBase(id, "Mock", "Mock device");
   builder.addReadableMetric(
-      "readable", "readable metric mock", DataType::BOOLEAN);
+      "readable", "readable metric mock", DataType::Boolean);
   return NonemptyDevicePtr(move(builder.getResult()));
 }
 
