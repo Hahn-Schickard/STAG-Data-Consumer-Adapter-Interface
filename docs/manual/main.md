@@ -1,1 +1,3 @@
+# Introduction
+
 This module provides an interface to the Information Model Repository which is populated and managed by Technolgoy Adapter Implemntations for various Data Consumer Adapters (DCAs). DCA implementations are managed by the system plugin manager, which controls the lifetimes of all the system modules.
