@@ -1,9 +1,15 @@
-<img src="docs/images/vendor-logo.png" alt="" width="200"/>
-
 # Data Consumer Adapter Interface
 
 ## Description
 This interface provides access to the [Event_Source](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/cpp-projects/event-model), set by STAG [Information Model Manager](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/information-model-manager) and must be implemented by all Data Consumer Adapter Implementations
+
+## Fresh setup
+
+This project uses git submodules, please initialize them when creating a fresh repository clone. To initialize all of the submodule run the following command:
+
+```
+git submodule update --init --recursive
+```
 
 ## Documentation
 
@@ -13,7 +19,7 @@ If you want to have the latest documentation with your changes locally, you can 
 doxygen Doxyfile
 ```
 
-This will generate html like documentation at `[PROJECT_ROOT]/docs/code_documentation/html`. To use it open the `[PROJECT_ROOT]/docs/code_documentation/html/index.html` file with your browser.
+This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To read the generated files, open the `[PROJECT_ROOT]/docs/html/index.html` with your browser.
 
 ## Dependencies
 ### Required
