@@ -18,8 +18,8 @@ target_sources(${THIS} PRIVATE
 
 #@+ ==================== User TEST_DEPENDCIES configuration =======================
 list(APPEND TEST_DEPENDCIES
-                       Data_Consumer_Adapter_Interface
-                       HaSLL::HaSLL
+            ${PROJECT_NAME}
+            HaSLL::HaSLL
 )
 #@- ========================= END OF USER CONFIGURATION ===========================
 

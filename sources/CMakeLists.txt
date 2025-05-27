@@ -1,2 +1,2 @@
-add_subdirectory(lib)
-add_subdirectory(runner)
+add_subdirectory(Library)
+add_subdirectory(Example)
