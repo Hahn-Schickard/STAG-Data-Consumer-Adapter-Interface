@@ -19,10 +19,8 @@ class PackageConan(ConanFile):
     description = ""
     topics = ("")
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False],
-               "fPIC": [True, False]}
-    default_options = {"shared": True,
-                       "fPIC": True}
+    options = {}
+    default_options = {}
     default_user = "Hahn-Schickard"
     # @- END USER META CONFIG
     exports_sources = [
@@ -37,6 +35,7 @@ class PackageConan(ConanFile):
     ]
     generators = "CMakeDeps"
     short_paths = True
+    package_type = "header-library"
 
     @property
     def cwd(self):
@@ -70,10 +69,6 @@ class PackageConan(ConanFile):
     def layout(self):
         cmake_layout(self)
 
-    def config_options(self):
-        if self.settings.os == 'Windows':
-            del self.options.fPIC
-
     def generate(self):
         tc = CMakeToolchain(self)
         tc.variables['STATIC_CODE_ANALYSIS'] = False
@@ -96,7 +91,7 @@ class PackageConan(ConanFile):
         copy(self, pattern='AUTHORS', dst='licenses', src=self.cwd)
 
     def package_info(self):
-        self.cpp_info.libs = collect_libs(self)
+        self.cpp_info.libs = []
         self.cpp_info.set_property("cmake_find_mode", "both")
         # @+ START USER DEFINES
         project_name = to_camel_case(self.name)
@@ -104,3 +99,6 @@ class PackageConan(ConanFile):
         self.cpp_info.set_property("cmake_file_name", project_name)
         cmake_target_name = project_name + "::" + project_name
         self.cpp_info.set_property("cmake_target_name", cmake_target_name)
+
+    def package_id(self):
+        self.info.clear()
