@@ -1,37 +1,31 @@
-#include "DataConsumerAdapterInterface.hpp"
-#include "Event_Model/AsyncEventSource.hpp"
+#include "DataConsumerAdapter.hpp"
 
-#include "HaSLL/LoggerManager.hpp"
-#include "Information_Model/mocks/DeviceMockBuilder.hpp"
-#include "Variant_Visitor.hpp"
+#include <HaSLL/LoggerManager.hpp>
+#include <Information_Model_Mocks/MockBuilder.hpp>
+#include <Variant_Visitor/Visitor.hpp>
 
 #include <exception>
 #include <iostream>
 #include <set>
+#include <thread>
 
 using namespace std;
 using namespace Data_Consumer_Adapter;
 using namespace HaSLL;
 using namespace Information_Model;
 
-// NOLINTNEXTLINE(readability-identifier-naming)
-struct DCAI_Example : DataConsumerAdapterInterface {
-  explicit DCAI_Example(const ModelEventSourcePtr& source)
-      /* Never move into Model Event Source ptr either! */
-      : DataConsumerAdapterInterface(source, "Example DCAI") {} // NOLINT
-
-  void start(const Devices& devices = {}) final {
-    DataConsumerAdapterInterface::start(devices);
-  }
+struct ExampleAdapter : DataConsumerAdapter {
+  explicit ExampleAdapter(const DataConnector& connector)
+      : DataConsumerAdapter("Example DCAI", connector) {}
 
 private:
-  void registrate(const Information_Model::NonemptyDevicePtr& device) override {
-    auto [_, emplaced] = devices_.emplace(device->getElementId());
+  void registrate(const DevicePtr& device) override {
+    auto [_, emplaced] = devices_.emplace(device->id());
     if (emplaced) {
-      logger->trace("Device: {} was registered!", device->getElementName());
+      logger->trace("Device: {} was registered!", device->name());
     } else {
       logger->trace("Device: {} was already registered. Ignoring new instance!",
-          device->getElementName());
+          device->name());
     }
   }
 
@@ -48,54 +42,41 @@ private:
   set<string> devices_;
 };
 
-void printException(const exception& e, int level = 0) {
-  cerr << string(level, ' ') << "Exception: " << e.what() << endl;
-  try {
-    rethrow_if_nested(e);
-  } catch (const exception& nested_exception) {
-    printException(nested_exception, level + 1);
-  } catch (...) {
-    cerr << "Caught an unhandled exception" << endl;
+struct FakeSource {
+  DataConnectionPtr connect(const DataNotifier& notifier) {
+    auto connection = make_shared<FakeConnection>(notifier);
+    connection_ = connection;
+    return connection;
   }
-}
 
-class EventSourceFake
-    : public Event_Model::AsyncEventSource<ModelRepositoryEvent> {
-
-  LoggerPtr logger_;
-
-  void handleException(const exception_ptr& ex_ptr) const {
-    try {
-      if (ex_ptr) {
-        rethrow_exception(ex_ptr);
-      }
-    } catch (const exception& ex) {
-      logger_->error(
-          "An exception occurred while notifying a listener: {}", ex.what());
-      printException(ex);
+  void notify(const ModelRepositoryEventPtr& event) {
+    if (auto locked = connection_.lock()) {
+      locked->call(event);
     }
   }
 
-public:
-  EventSourceFake()
-      : AsyncEventSource(
-            bind(&EventSourceFake::handleException, this, placeholders::_1)),
-        logger_(LoggerManager::registerTypedLogger(this)) {}
-
-  void registerDevice(const NonemptyDevicePtr& device) {
+  void registerDevice(const DevicePtr& device) {
     auto event = std::make_shared<ModelRepositoryEvent>(device);
-    logger_->trace(
-        "Notifing listeners that Device {} is available for registration.",
-        device->getElementId());
-    notify(move(event));
+    notify(event);
   }
 
   void deregisterDevice(const string& identifier) {
     auto event = std::make_shared<ModelRepositoryEvent>(identifier);
-    logger_->trace(
-        "Notifing listeners that Device {} is no longer available", identifier);
-    notify(move(event));
+    notify(event);
   }
+
+private:
+  struct FakeConnection : DataConnection {
+    FakeConnection(const DataNotifier& notifier) : notify_(notifier) {}
+
+    void call(const ModelRepositoryEventPtr& event) { notify_(event); }
+
+  private:
+    DataNotifier notify_;
+  };
+
+  using WeakConnectionPtr = weak_ptr<FakeConnection>;
+  WeakConnectionPtr connection_;
 };
 
 int main() {
@@ -104,26 +85,26 @@ int main() {
     LoggerManager::initialise(makeDefaultRepository());
     try {
 
-      auto event_source = make_shared<EventSourceFake>();
-      auto dcai = DCAI_Example(event_source);
+      auto event_source = FakeSource();
+      auto dcai = ExampleAdapter([&event_source](const DataNotifier& notifier) {
+        return event_source.connect(notifier);
+      });
 
       dcai.start();
 
       string device_id = "1234";
       {
-        auto builder =
-            make_unique<Information_Model::testing::DeviceMockBuilder>();
-        builder->buildDeviceBase(
-            device_id, "Mocky", "A mocked device with no elements");
-        NonemptyDevicePtr result(builder->getResult());
-        event_source->registerDevice(result);
-        event_source->registerDevice(
-            result); // check if double registration is handled
+        auto builder = make_unique<Information_Model::testing::MockBuilder>();
+        builder->setDeviceInfo(
+            device_id, BuildInfo{"Mocky", "A mocked device with no elements"});
+        builder->addReadable(
+            BuildInfo{"readable", "readable metric mock"}, DataType::Boolean);
+        DevicePtr result = builder->result();
+        event_source.registerDevice(result);
         builder.reset();
       }
 
-      event_source->deregisterDevice(device_id);
-      event_source->deregisterDevice("nonsense ID"); // check bad ID deregister
+      event_source.deregisterDevice(device_id);
 
       this_thread::sleep_for(2s);
 
@@ -131,7 +112,7 @@ int main() {
 
       status = EXIT_SUCCESS;
     } catch (const exception& ex) {
-      printException(ex);
+      cerr << "Caught an exception during execution: " << ex.what() << endl;
       status = EXIT_FAILURE;
     }
     LoggerManager::terminate();
