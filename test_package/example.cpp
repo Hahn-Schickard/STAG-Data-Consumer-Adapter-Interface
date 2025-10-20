@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
   Information_Model::DevicePtr device;
-  Data_Consumer_Adapter::ModelRepositoryEventPtr event;
+  Data_Consumer_Adapter::RegistryChangePtr event;
   Data_Consumer_Adapter::DataConnectionPtr connection;
   Data_Consumer_Adapter::DataNotifier notifier;
   Data_Consumer_Adapter::DataConnector connector;
