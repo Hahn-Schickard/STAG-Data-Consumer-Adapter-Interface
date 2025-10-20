@@ -1,4 +1,4 @@
-# Data Consumer Adapter Interface
+# Data Consumer Adapter Interface {#mainpage}
 
 This module provides an interface to the Information Model Repository for various Data Consumer Adapters (DCAs). DCA implementations are managed by the system plugin manager, which controls the lifetimes of all the system modules.
 
