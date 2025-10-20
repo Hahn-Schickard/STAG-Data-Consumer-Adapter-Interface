@@ -49,19 +49,19 @@ struct FakeSource {
     return connection;
   }
 
-  void notify(const ModelRepositoryEventPtr& event) {
+  void notify(const RegistryChangePtr& event) {
     if (auto locked = connection_.lock()) {
       locked->call(event);
     }
   }
 
   void registerDevice(const DevicePtr& device) {
-    auto event = std::make_shared<ModelRepositoryEvent>(device);
+    auto event = std::make_shared<RegistryChange>(device);
     notify(event);
   }
 
   void deregisterDevice(const string& identifier) {
-    auto event = std::make_shared<ModelRepositoryEvent>(identifier);
+    auto event = std::make_shared<RegistryChange>(identifier);
     notify(event);
   }
 
@@ -69,7 +69,7 @@ private:
   struct FakeConnection : DataConnection {
     FakeConnection(const DataNotifier& notifier) : notify_(notifier) {}
 
-    void call(const ModelRepositoryEventPtr& event) { notify_(event); }
+    void call(const RegistryChangePtr& event) { notify_(event); }
 
   private:
     DataNotifier notify_;

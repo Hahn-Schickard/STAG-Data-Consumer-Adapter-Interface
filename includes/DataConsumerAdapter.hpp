@@ -15,15 +15,14 @@ struct DataConnection {
 };
 
 using DataConnectionPtr = std::shared_ptr<DataConnection>;
-using ModelRepositoryEvent =
-    std::variant<std::string, Information_Model::DevicePtr>;
-using ModelRepositoryEventPtr = std::shared_ptr<ModelRepositoryEvent>;
-using DataNotifier = std::function<void(const ModelRepositoryEventPtr&)>;
+using RegistryChange = std::variant<std::string, Information_Model::DevicePtr>;
+using RegistryChangePtr = std::shared_ptr<RegistryChange>;
+using DataNotifier = std::function<void(const RegistryChangePtr&)>;
 using DataConnector = std::function<DataConnectionPtr(DataNotifier&&)>;
 
 /**
- * @brief DataConsumerAdapterInterface is an abstraction for various user
- * applications that need to interact with the Information Model
+ * @brief DataConsumerAdapter is an abstraction for various user applications
+ * that need to interact with the Information Model
  *
  * This interface provides the latest available Information Model Repository
  * snapshot, access to Information Model Registry events as well as a common
@@ -110,7 +109,7 @@ protected:
   virtual void deregistrate(const std::string& device_id) = 0;
 
 private:
-  void handleEvent(const ModelRepositoryEventPtr& event);
+  void handleEvent(const RegistryChangePtr& event);
 
   void registerDevice(const Information_Model::DevicePtr& device);
 

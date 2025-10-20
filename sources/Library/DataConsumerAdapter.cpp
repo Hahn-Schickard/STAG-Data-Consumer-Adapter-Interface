@@ -31,7 +31,7 @@ void DataConsumerAdapter::initialiseModel(const Devices& devices) {
   }
 }
 
-void DataConsumerAdapter::handleEvent(const ModelRepositoryEventPtr& event) {
+void DataConsumerAdapter::handleEvent(const RegistryChangePtr& event) {
   Variant_Visitor::match(
       *event,
       [this](const DevicePtr& device) {

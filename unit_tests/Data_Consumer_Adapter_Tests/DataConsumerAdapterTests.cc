@@ -39,7 +39,7 @@ struct FakeSource {
     return connection;
   }
 
-  void notify(const ModelRepositoryEventPtr& event) {
+  void notify(const RegistryChangePtr& event) {
     for (auto it = connections_.begin(); it != connections_.end();) {
       if (auto connection = it->lock()) {
         connection->call(event);
@@ -54,7 +54,7 @@ private:
   struct FakeConnection : DataConnection {
     FakeConnection(const DataNotifier& notifier) : notify_(notifier) {}
 
-    void call(const ModelRepositoryEventPtr& event) { notify_(event); }
+    void call(const RegistryChangePtr& event) { notify_(event); }
 
   private:
     DataNotifier notify_;
@@ -104,7 +104,7 @@ TEST_F(DataConsumerAdapterTests, canRegisterDevice) {
   auto device = makeDevice("12345");
   EXPECT_CALL(*mock, registrate(device)).Times(1);
 
-  auto event = make_shared<ModelRepositoryEvent>(device);
+  auto event = make_shared<RegistryChange>(device);
   source->notify(event);
 }
 
@@ -139,7 +139,7 @@ TEST_F(DataConsumerAdapterTests, canDeregisterDevice) {
   string device_id = "12345";
   EXPECT_CALL(*mock, deregistrate(device_id)).Times(1);
 
-  auto event = make_shared<ModelRepositoryEvent>(device_id);
+  auto event = make_shared<RegistryChange>(device_id);
   source->notify(event);
 }
 
