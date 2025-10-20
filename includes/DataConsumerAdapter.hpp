@@ -10,14 +10,43 @@
 #include <variant>
 
 namespace Data_Consumer_Adapter {
+/**
+ * @brief DataConnection object is used to track the lifetime of the connection
+ * between the DataConsumerAdapter implementation and the Information Model
+ * Repository
+ *
+ * As long as this object exits, Information Model Repository will send
+ * RegistryChange notifications to the DataConsumerAdapter implementation
+ */
 struct DataConnection {
   virtual ~DataConnection() = default;
 };
 
 using DataConnectionPtr = std::shared_ptr<DataConnection>;
+
+/**
+ * @brief Information Model Repository change notification value
+ *
+ * @arg std::string - indicates that a device with a matching ID was removed
+ * from the repository and is no longer usable
+ * @arg Information_Model::DevicePtr - indicates that a given devices was added
+ * to the repository
+ */
 using RegistryChange = std::variant<std::string, Information_Model::DevicePtr>;
 using RegistryChangePtr = std::shared_ptr<RegistryChange>;
+
+/**
+ * @brief Information Model Repository change notifier callable object
+ *
+ * Used by Information Model Repository do dispatch notifications
+ */
 using DataNotifier = std::function<void(const RegistryChangePtr&)>;
+
+/**
+ * @brief DataConnector callable is used to establish a connection for
+ * RegistryChange notifications between the DataConsumerAdapter implementation
+ * and the Information Model Repository
+ */
 using DataConnector = std::function<DataConnectionPtr(DataNotifier&&)>;
 
 /**
@@ -47,6 +76,17 @@ struct DataConsumerAdapter {
   std::string name() const;
 
   /**
+   * @brief Registers the provided Information Model Repository snapshot
+   *
+   * @attention
+   * The execution of this method blocks registrate() and deregistrate() calls
+   * until this method is finished
+   *
+   * @param devices - current Information Model Repository snapshot
+   */
+  void initialiseModel(const Devices& devices);
+
+  /**
    * @brief Non-blocking start method
    *
    * @attention
@@ -74,8 +114,6 @@ struct DataConsumerAdapter {
    * there
    */
   virtual void stop();
-
-  void initialiseModel(const Devices& devices);
 
 protected:
   HaSLL::LoggerPtr logger; // NOLINT(readability-identifier-naming)

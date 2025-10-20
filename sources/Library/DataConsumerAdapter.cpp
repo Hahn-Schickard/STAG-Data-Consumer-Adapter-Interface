@@ -25,13 +25,14 @@ void DataConsumerAdapter::start() { logger->info("Started!"); }
 void DataConsumerAdapter::stop() { logger->info("Stopped"); }
 
 void DataConsumerAdapter::initialiseModel(const Devices& devices) {
-  auto registrate_lock = scoped_lock(mx_);
+  auto event_lock = scoped_lock(mx_);
   for (const auto& device : devices) {
     registerDevice(device);
   }
 }
 
 void DataConsumerAdapter::handleEvent(const RegistryChangePtr& event) {
+  auto event_lock = scoped_lock(mx_);
   Variant_Visitor::match(
       *event,
       [this](const DevicePtr& device) {
