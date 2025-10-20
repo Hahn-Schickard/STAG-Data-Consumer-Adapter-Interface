@@ -4,6 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <memory>
 #include <thread>
 
@@ -11,6 +12,7 @@ namespace Data_Consumer_Adapter::testing {
 using namespace std;
 using namespace Information_Model;
 using namespace Information_Model::testing;
+using namespace ::testing;
 
 struct DataConsumerAdapterMock : DataConsumerAdapter {
   DataConsumerAdapterMock(const string& name, const DataConnector& connector)
@@ -23,8 +25,7 @@ struct DataConsumerAdapterMock : DataConsumerAdapter {
     });
   }
 
-  MOCK_METHOD(
-      void, registrate, (const Information_Model::DevicePtr&), (override));
+  MOCK_METHOD(void, registrate, (const DevicePtr&), (override));
   MOCK_METHOD(void, deregistrate, (const string&), (override));
   MOCK_METHOD(void, start, (), (override));
   MOCK_METHOD(void, stop, (), (override));
@@ -100,17 +101,40 @@ DevicePtr makeDevice(const string& id) {
   return builder->result();
 }
 
-TEST_F(DataConsumerAdapterTests, canRegisterDevice) {
+TEST_F(DataConsumerAdapterTests, returnsName) {
+  EXPECT_EQ(tested->name(), "Mock adapter");
+}
+
+TEST_F(DataConsumerAdapterTests, canStart) {
+  EXPECT_CALL(*mock, start()).Times(1);
+
+  EXPECT_NO_THROW(tested->start());
+}
+
+TEST_F(DataConsumerAdapterTests, canStop) {
+  EXPECT_CALL(*mock, stop()).Times(1);
+
+  EXPECT_NO_THROW(tested->stop());
+}
+
+TEST_F(DataConsumerAdapterTests, canRegister) {
   auto device = makeDevice("12345");
   EXPECT_CALL(*mock, registrate(device)).Times(1);
 
-  auto event = make_shared<RegistryChange>(device);
-  source->notify(event);
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>(device)));
+}
+
+TEST_F(DataConsumerAdapterTests, canHandleRegisterException) {
+  auto expected = runtime_error("Test exception throwing during registration");
+  auto device = makeDevice("01");
+  EXPECT_CALL(*mock, registrate(device)).Times(1).WillOnce(Throw(expected));
+
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>(device)));
 }
 
 constexpr size_t INITIAL_MODEL_SIZE = 5;
 
-TEST_F(DataConsumerAdapterTests, canInitialiseModel) {
+TEST_F(DataConsumerAdapterTests, canInit) {
   vector<DevicePtr> devices;
   devices.reserve(INITIAL_MODEL_SIZE);
   for (size_t i = 0; i < INITIAL_MODEL_SIZE; ++i) {
@@ -124,7 +148,6 @@ TEST_F(DataConsumerAdapterTests, canInitialiseModel) {
     EXPECT_CALL(*mock, registrate(device)).Times(1);
   }
 
-  tested->start();
   auto init_model_thread = thread(
       [&devices, weak_adapter = weak_ptr<DataConsumerAdapter>(tested)]() {
         if (auto adapter = weak_adapter.lock()) {
@@ -135,23 +158,47 @@ TEST_F(DataConsumerAdapterTests, canInitialiseModel) {
   EXPECT_FALSE(init_model_thread.joinable());
 }
 
-TEST_F(DataConsumerAdapterTests, canDeregisterDevice) {
-  string device_id = "12345";
-  EXPECT_CALL(*mock, deregistrate(device_id)).Times(1);
+TEST_F(DataConsumerAdapterTests, canDeregister) {
+  string id = "12345";
+  EXPECT_CALL(*mock, deregistrate(id)).Times(1);
 
-  auto event = make_shared<RegistryChange>(device_id);
+  auto event = make_shared<RegistryChange>(id);
   source->notify(event);
 }
 
-TEST_F(DataConsumerAdapterTests, canStart) {
-  EXPECT_CALL(*mock, start());
+TEST_F(DataConsumerAdapterTests, canHandleDeregisterException) {
+  auto expected =
+      runtime_error("Test exception throwing during deregistration");
+  EXPECT_CALL(*mock, deregistrate("")).Times(1).WillOnce(Throw(expected));
 
-  EXPECT_NO_THROW(tested->start());
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>("")));
 }
 
-TEST_F(DataConsumerAdapterTests, canStop) {
-  EXPECT_CALL(*mock, stop());
+TEST_F(DataConsumerAdapterTests, canNotDeregisterDuringInit) {
+  string id = "0";
+  auto device1 = makeDevice(id);
+  auto device2 = makeDevice("1");
 
-  EXPECT_NO_THROW(tested->stop());
+  {
+    InSequence sequence;
+    EXPECT_CALL(*mock, registrate(device1)).Times(1).WillOnce([]() {
+      this_thread::sleep_for(100ms);
+    });
+    EXPECT_CALL(*mock, registrate(device2)).Times(1).WillOnce([]() {
+      this_thread::sleep_for(100ms);
+    });
+    EXPECT_CALL(*mock, deregistrate(id)).Times(1);
+    EXPECT_CALL(*mock, registrate(_)).Times(0);
+    EXPECT_CALL(*mock, deregistrate(_)).Times(0);
+  }
+
+  auto start = chrono::system_clock::now();
+  tested->initialiseModel({device1, device2});
+  auto stop = chrono::system_clock::now();
+
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>(id)));
+
+  auto duration = stop - start;
+  EXPECT_THAT(duration, AllOf(Gt(200ms), Lt(300ms)));
 }
 } // namespace Data_Consumer_Adapter::testing
