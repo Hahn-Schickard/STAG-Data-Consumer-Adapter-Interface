@@ -1,6 +1,6 @@
 # Using the Device abstraction {#consuming_devices} 
 
-The following sections provide an abbreviated documentation for the Information Model module. For a more detailed documentation, please see [Information Model](https://stag.hahn-schickard.de/404) documentation page.
+The following sections provide an abbreviated documentation for the Information Model module. For a more detailed documentation, please see [Information Model](https://hahn-schickard.dev-hs.de/software-sollutions/application-engineering/internal/stag_dev/modules/core/information-model/documentation/index.html) documentation page.
 
 ## Using Devices
 
@@ -423,4 +423,4 @@ The above mentioned `Information_Model::ResultFuture` structure is used as a wra
 
 # Simulating device abstractions
 
-During development, you will not have access to the Information Model Manager, and thus any `Information_Model::Device` instances, however you may wish to test how your code uses `Information_Model::Device` instances. To avoid having to implement your own `Information_Model::Device` mocks, you can use the [Information Model Mocks](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/stag_dev/modules/core/information-model-mocks) project which defines all of the Information Model classes as [GTest](https://google.github.io/googletest/) mocks and provides a convenient mock builder class.
+During development, you will not have access to the Information Model Manager, and thus any `Information_Model::Device` instances, however you may wish to test how your code uses `Information_Model::Device` instances. To avoid having to implement your own `Information_Model::Device` mocks, you can use the [Information Model Mocks](https://information-model-mocks-b1760c.dev-hs.de/documentation/index.html) project which defines all of the Information Model classes as [GTest](https://google.github.io/googletest/) mocks and provides a convenient mock builder class.
