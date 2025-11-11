@@ -1,5 +1,5 @@
 # Changelog
-## [0.4.0] - 2025.10.22
+## [0.4.0] - 2025.11.11
 ### Added
  - `DataConnection` class
  - `DataConnector` callable
