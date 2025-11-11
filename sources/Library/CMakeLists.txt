@@ -1,50 +1,36 @@
-cmake_minimum_required(VERSION 3.6) 
+set(TARGET ${PROJECT_NAME})
 
-set(MODULE ${PROJECT_NAME})
+#@+ =========================== User TARGET configuration ===============================
+set(THIS_INCLUDES_DIR ${INCLUDES_DIR})
+file(GLOB THIS_INCLUDES ${THIS_INCLUDES_DIR}/*.hpp)
+file(GLOB SOURCEFILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}
+add_library(${TARGET})
+target_sources(${TARGET}
+    PUBLIC
+        ${THIS_INCLUDES}
+    PRIVATE
+        ${SOURCEFILES}
 )
 
-list(APPEND THIS_MOCK_INCLUDES_DIRS
-            ${INCLUDES_DIR}/mocks
+target_link_libraries(${TARGET}
+    PUBLIC 
+        Information_Model::Information_Model
+        HaSLL::HaSLL
+    PRIVATE
+        Variant_Visitor::Variant_Visitor
 )
 
-INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
-INCLUDE_DIRS_AND_FILES("${THIS_MOCK_INCLUDES_DIRS}" THIS_MOCK_INCLUDES)
-
-find_package(GTest REQUIRED)
-
-add_library(${MODULE} INTERFACE)
-
-target_link_libraries(${MODULE} INTERFACE 
-                              Event_Model::Event_Model
-                              Information_Model::Information_Model
-                              HaSLL::HaSLL
-                              GTest::GTest
+target_include_directories(${TARGET}
+    PUBLIC
+        $<BUILD_INTERFACE:${THIS_INCLUDES_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
+#@- =========================== END OF USER CONFIGURATION ===============================
+target_compile_features(${TARGET} INTERFACE cxx_std_17)
 
-target_include_directories(${MODULE} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}>
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/mocks>
-                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
-)
+PRINT_TARGET_PROPERTIES(${TARGET})
 
-target_compile_features(${MODULE} INTERFACE cxx_std_17)
-
-install(
-    TARGETS ${MODULE}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-    FILES ${THIS_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-)
-
-install(
-    FILES ${THIS_MOCK_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/mocks
-)
+INSTALL_TARGET(${TARGET})
+INSTALL_HEADERS(HEADERS "${THIS_INCLUDES}")

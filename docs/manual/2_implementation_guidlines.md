@@ -1,0 +1,11 @@
+# Implementation guidelines {#ImplementationGuidelines}
+
+When implementing `Data_Consumer_Adapter::DataConsumerAdapter` interface, there are a few key things to keep in mind to ensure that your Adapter implementation works as expected. 
+
+1. Your `Data_Consumer_Adapter::DataConsumerAdapter` implementation must be inside Data_Consumer_Adapter namespace only. Namespace redefinition or namespace nesting is not allowed. This ensures that STAG System can find your implementation symbols and load them properly. 
+2. `Data_Consumer_Adapter::DataConsumerAdapter` implementation **SHOULD** only import what it needs to start/stop the communication process. Any extra implementation detail **SHOULD** be unreachable to STAG System. This is to ensure that STAG System can only create/destroy and start/stop your implementation.
+3. Construction of your `Data_Consumer_Adapter::DataConsumerAdapter` implementation **MUST** be as swift as possible and **MUST NOT** block for an extended or an indefinite period of time. This is to ensure that STAG System can instantiate various `Data_Consumer_Adapter::DataConsumerAdapter` implementations swiftly and efficiently.
+4. Any communication processes **MUST** start after the `Data_Consumer_Adapter::DataConsumerAdapter::start()` was called, **NOT** during the construction. This is to ensure that construction of your implementation is as swift as possible, as well as ensuring that no unexpected behavior occurs.
+5. `Data_Consumer_Adapter::DataConsumerAdapter::start()` implementation **MUST** always be implemented in a non-blocking fashion.
+6. Your `Data_Consumer_Adapter::DataConsumerAdapter` implementation **MUST** implement `Data_Consumer_Adapter::DataConsumerAdapter::registrate()` and `Data_Consumer_Adapter::DataConsumerAdapter::deregistrate()` methods. These implementations can throw exceptions.
+7. Your implementation **MUST NOT** call the public `Data_Consumer_Adapter::DataConsumerAdapter::start()`, `Data_Consumer_Adapter::DataConsumerAdapter::stop()` and `Data_Consumer_Adapter::DataConsumerAdapter::initialiseModel()` methods during normal operation. These methods are **ONLY** meant to be called by the STAG system. You can **ONLY** call them yourself during tests and example usage.

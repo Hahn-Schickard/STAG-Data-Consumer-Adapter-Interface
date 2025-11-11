@@ -1,4 +1,27 @@
 # Changelog
+## [0.4.0] - 2025.10.22
+### Added
+ - `DataConnection` class
+ - `DataConnector` callable
+ - `Variant_Visitor` v0.2 as an invisible dependency
+ - `Information_Model_Mocks` v0.1 as a test requires dependency
+ - transparent requires for `HaSLL` and `Information_Model` dependencies
+
+### Changed
+ - `ModelRepositoryEvent` into `RegistryChange`
+ - `DataConsumerAdapterInterface::initialiseModel()` to be public
+ - `DataConsumerAdapterInterface::registrate()` to be pure virtual
+ - `DataConsumerAdapterInterface::deregistrate()` to be pure virtual
+ - `DataConsumerAdapterInterface::event_mx_` into `DataConsumerAdapterInterface::mx_`
+ - `DataConsumerAdapterInterface` into `DataConsumerAdapter`
+ - `Information_Model` dependency to v0.5
+ - conan package type to library
+ 
+### Removed
+ - `DataConsumerAdapterInterface::init_thread_` field
+ - `Event_Model` dependency
+ - direct `GTest` dependency
+
 ## [0.3.0] - 2025.03.06
 ### Added 
  - Windows 10 support 

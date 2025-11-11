@@ -19,7 +19,7 @@ If you want to have the latest documentation with your changes locally, you can 
 doxygen Doxyfile
 ```
 
-This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To read the generated files, open the `[PROJECT_ROOT]/docs/html/index.html` with your browser.
+This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To use it open the `[PROJECT_ROOT]/docs/html/index.html` file with your browser.
 
 ## Dependencies
 ### Required
@@ -27,13 +27,13 @@ This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To rea
 * compiler with C++17 support
 * cmake 3.24.0 >= - build system generator, used by package generator as well
 * python3 - used by utilities and package generator
-* conan 2.4.0 >= - dependency handler/package generator, see [SSO Wiki](https://ssowiki.hsg.privat/en/Softwareentwicklung/Cpp/Conan_Package_Manager) for installation
+* conan 2.4.0 >= - dependency handler/package generator
 
 ### Optional
 
 * ninja - build system (alternative to `make`)
-* clang-format 15.0.7 - to use formatting tools
-* clang-tidy 15.0.7 - to use static code analysis
+* clang-format >=15.0.7 - to use formatting tools
+* clang-tidy >=15.0.7 - to use static code analysis
 * lcov - to generate code coverage reports
 * valgrind - to run memory analysis
 * doxygen 1.9.8 >= - to generate documentation from code
@@ -51,6 +51,7 @@ This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To rea
 * [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) - provides english text spellchecker functionality
 
 ## CMake Variant Integration
+
 A CMake variant file is provided with this repository for easy cmake configuration setup. This functionality requires CMake Tools plugin to be installed. After Visual Code has been started Open Control Panel with Cntrl + Shift + P and type in CMake: Select Variant to start configuring your cmake project configuration.
 
 ## Building the project
@@ -93,9 +94,10 @@ To create a custom local package first define `VERSION`, `USER` and `CHANEL` env
 
 - `VERSION` variable specifies package version number in the following format `${MAJOR}.${MINOR}.${PATCH}`. For more information see [Release versioning schema](CONTRIBUTING.md#release-versioning-schema)
 - `USER` variable specifies the name of release community (for example `hahn-schickard`, `bincrafters`, etc.), it is used to showcase that this package is outside of [conan-center-index](https://conan.io/center/) repository
-- `CHANEL` variable specifies the package type, i.e. if it is a stable, development or nightly release
+- `CHANEL` variable specifies the package type, i.e. if it is a stable, development or nightly release, defaults to empty
 
 ### Conan v1
+
 To create local conan packages run the following command in project root directory:
 
 ```bash
@@ -110,21 +112,10 @@ To create local conan packages run the following command in project root directo
 conan create . --version=${VERSION} --user=${USER} --channel=${CHANEL} --build=missing
 ```
 
-In case you need to specify C++ standard, run the following command in project root directory:
+In case you need to change default recipe options
 
 ```bash
-conan create . --version=${VERSION} --user=${USER} --channel=${CHANEL} --build=missing -s:h compiler.cppstd=17 -s:b compiler.cppstd=17
+conan create . --version=${VERSION} --user=${USER} --channel=${CHANEL} --build=missing -o ${OPTION_PAIR}
 ```
 
-## Project utility tools
-
-This project comes with integrated utility scripts written in python3 to check code coverage with **gcov** and **lcov**, check for memory leaks with **valgrind** and generate documentation with **Doxygen**. You can use these by running the following:
-
-* `python3 utility/run-lcov.py --help` - to learn how to use **lcov** wrapper
-* `python3 utility/run-valgrind.py --help` - to learn how to use **valgrind** wrapper
-* `python3 utility/run-clang-tidy.py --help` - to learn how to use **run-clang-tidy** wrapper
-* `python3 utility/run-clang-format.py --help` - to learn how to use **run-clang-format** wrapper
-
-Hidden files and scripts within utility directory are used by CI/CD pipeline or as configuration files for the wrappers.
-
-This directory is typically maintained via [Project-Configurator](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/project-configurator) program and SHOULD not be modified manually. Any modifications SHOULD be done in [Project Template](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/project-template/-/tree/cpp) repository instead and updated via [Project-Configurator](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/project-configurator) once released.
+Where `${OPTION_PAIR}` is `option_name=value`. To add multiple options, continue to add `-o ${OPTION_PAIR}` as required.
