@@ -41,6 +41,10 @@ void DataConsumerAdapter::handleEvent(const RegistryChangePtr& event) {
         try {
           logger->trace("Removing device {}", device_id);
           deregistrate(device_id);
+        } catch (const DataConsumerAdapterNotImplemented&) {
+          logger->warning(
+              "Deregistration method is not implemented. You can ignore this "
+              "warning if it happens during Data Consumer Adapter destruction");
         } catch (const exception& ex) {
           logger->error(
               "{} Data Consumer Adapter encountered an unhandled exception "
@@ -53,6 +57,10 @@ void DataConsumerAdapter::handleEvent(const RegistryChangePtr& event) {
 void DataConsumerAdapter::registerDevice(const DevicePtr& device) {
   try {
     registrate(device);
+  } catch (const DataConsumerAdapterNotImplemented&) {
+    logger->warning(
+        "Registration method is not implemented. You can ignore this warning "
+        "if it happens during Data Consumer Adapter destruction");
   } catch (const exception& ex) {
     logger->error("{} Data Consumer Adapter encountered an unhandled exception "
                   "while registrating device {}. Exception: {}",
