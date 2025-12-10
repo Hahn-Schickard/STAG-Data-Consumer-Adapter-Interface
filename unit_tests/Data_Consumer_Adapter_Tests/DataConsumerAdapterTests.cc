@@ -70,15 +70,9 @@ using FakeSourcePtr = shared_ptr<FakeSource>;
 struct DataConsumerAdapterTests : public ::testing::Test {
   void SetUp() override {
     source = make_shared<FakeSource>();
-    auto connector = [weak_source = weak_ptr<FakeSource>(source)](
-                         const DataNotifier& notifier) {
-      if (auto source = weak_source.lock()) {
-        return source->connect(notifier);
-      } else {
-        return DataConnectionPtr();
-      }
-    };
-    mock = make_shared<DataConsumerAdapterMock>("Mock adapter", connector);
+
+    mock =
+        make_shared<DataConsumerAdapterMock>("Mock adapter", makeConnector());
     tested = mock;
   }
 
@@ -86,6 +80,17 @@ struct DataConsumerAdapterTests : public ::testing::Test {
     tested.reset();
     mock.reset();
     source.reset();
+  }
+
+  DataConnector makeConnector() const {
+    return [weak_source = weak_ptr<FakeSource>(source)](
+               const DataNotifier& notifier) {
+      if (auto source = weak_source.lock()) {
+        return source->connect(notifier);
+      } else {
+        return DataConnectionPtr();
+      }
+    };
   }
 
   FakeSourcePtr source;
@@ -115,6 +120,24 @@ TEST_F(DataConsumerAdapterTests, canStop) {
   EXPECT_CALL(*mock, stop()).Times(1);
 
   EXPECT_NO_THROW(tested->stop());
+}
+
+TEST_F(DataConsumerAdapterTests, handlesDataConsumerAdapterNotImplemented) {
+  // destroy the mock so it does not receive events
+  mock.reset();
+  tested.reset();
+
+  // build base DataConsumerAdapter to force DataConsumerAdapterNotImplemented
+  // exceptions. This exception should not be handled inside and be seen in
+  // logger output as a warning
+  auto fake = make_shared<DataConsumerAdapter>("Fake adapter", makeConnector());
+
+  auto device = makeDevice("12345");
+  // test registration
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>(device)));
+
+  // test deregistration
+  EXPECT_NO_THROW(source->notify(make_shared<RegistryChange>("12345")));
 }
 
 TEST_F(DataConsumerAdapterTests, canRegister) {
