@@ -15,6 +15,11 @@ DataConsumerAdapter::DataConsumerAdapter(
       bind(&DataConsumerAdapter::handleEvent, this, placeholders::_1));
 }
 
+DataConsumerAdapter::~DataConsumerAdapter() {
+  // ensure that connection is released first during destruction
+  connection_.reset();
+}
+
 string DataConsumerAdapter::name() const { return name_; }
 
 void DataConsumerAdapter::start() { logger->info("Started"); }

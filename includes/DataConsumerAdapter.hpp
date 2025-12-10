@@ -77,7 +77,7 @@ struct DataConsumerAdapter {
 
   DataConsumerAdapter(const std::string& name, const DataConnector& connector);
 
-  virtual ~DataConsumerAdapter() = default;
+  virtual ~DataConsumerAdapter();
 
   DataConsumerAdapter& operator=(const DataConsumerAdapter&) = delete;
 
