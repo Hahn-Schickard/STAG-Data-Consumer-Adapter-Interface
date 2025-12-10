@@ -128,7 +128,7 @@ TEST_F(DataConsumerAdapterTests, handlesDataConsumerAdapterNotImplemented) {
   tested.reset();
 
   // build base DataConsumerAdapter to force DataConsumerAdapterNotImplemented
-  // exceptions. This exception should not be handled inside and be seen in
+  // exceptions. This exception should be handled inside and be seen in
   // logger output as a warning
   auto fake = make_shared<DataConsumerAdapter>("Fake adapter", makeConnector());
 
