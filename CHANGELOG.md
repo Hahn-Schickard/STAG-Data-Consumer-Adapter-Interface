@@ -1,4 +1,17 @@
 # Changelog
+## [0.4.1] - 2025.11.10
+### Added
+ - `DataConsumerAdapterNotImplemented` exception
+
+### Changed
+ - `DataConsumerAdapterInterface::registrate()` back to be a virtual method with 
+ default implementation
+ - `DataConsumerAdapterInterface::deregistrate()` back to be a virtual method with 
+ default implementation
+ - `DataConsumerAdapterInterface::handleEvent()` method to log `DataConsumerAdapterNotImplemented` 
+ exception as a warning
+ - `DataConsumerAdapterInterface` destructor to first release the `DataConnection`
+
 ## [0.4.0] - 2025.11.11
 ### Added
  - `DataConnection` class
