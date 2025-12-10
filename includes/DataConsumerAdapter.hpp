@@ -144,8 +144,11 @@ protected:
    * an error
    *
    * @param device new/changed device instance
+   * @throws DataConsumerAdapterNotImplemented if this method is not implemented
    */
-  virtual void registrate(const Information_Model::DevicePtr& device) = 0;
+  virtual void registrate(const Information_Model::DevicePtr& /* device */) {
+    throw DataConsumerAdapterNotImplemented();
+  }
 
   /**
    * @brief Searches for a device with a given device id and removes it from the
@@ -156,8 +159,11 @@ protected:
    * an error
    *
    * @param device_id
+   * @throws DataConsumerAdapterNotImplemented if this method is not implemented
    */
-  virtual void deregistrate(const std::string& device_id) = 0;
+  virtual void deregistrate(const std::string& /* device_id */) {
+    throw DataConsumerAdapterNotImplemented();
+  }
 
 private:
   void handleEvent(const RegistryChangePtr& event);
