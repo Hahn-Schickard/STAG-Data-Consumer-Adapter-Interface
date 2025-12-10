@@ -11,6 +11,19 @@
 
 namespace Data_Consumer_Adapter {
 /**
+ * @brief Indicates that one or more of DataConsumerAdapter methods are not
+ * implemented.
+ *
+ * This exception can also be thrown and handled in
+ * DataConsumerAdapter::handleEvent() when an event is dispatched during
+ * DataConsumerAdapter destruction
+ */
+struct DataConsumerAdapterNotImplemented : public std::runtime_error {
+  DataConsumerAdapterNotImplemented()
+      : runtime_error("Data Consumer Adapter is not fully implemented") {}
+};
+
+/**
  * @brief DataConnection object is used to track the lifetime of the connection
  * between the DataConsumerAdapter implementation and the Information Model
  * Repository
